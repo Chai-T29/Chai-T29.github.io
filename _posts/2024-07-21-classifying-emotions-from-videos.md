@@ -231,7 +231,8 @@ The formulation of this Histogram of Oriented Gradients algorithm is loosely bas
 
 **1.** Iterate through every sample, convert the frames to grayscale, and (optionally) apply the following Gaussian filter to each frame of the video ($V$):
 
-$$Gaussian\>Filter \> \Longrightarrow \> \frac{1}{1115}\begin{pmatrix}
+$$
+Gaussian\>Filter \> \Longrightarrow \> \frac{1}{1115}\begin{pmatrix}
   1 & 4 & 7 & 10 & 7 & 4 & 1 \\
   4 & 12 & 26 & 33 & 26 & 12 & 4 \\
   7 & 26 & 55 & 71 & 55 & 26 & 7 \\
@@ -239,12 +240,12 @@ $$Gaussian\>Filter \> \Longrightarrow \> \frac{1}{1115}\begin{pmatrix}
   7 & 26 & 55 & 71 & 55 & 26 & 7 \\
   4 & 12 & 26 & 33 & 26 & 12 & 4 \\
   1 & 4 & 7 & 10 & 7 & 4 & 1
-\end{pmatrix} \\
+\end{pmatrix}
 $$
 
 **2.** We then compute the gradients with respect to the height, width [1], and frames ($\frac{\partial V}{\partial x}$, $\frac{\partial V}{\partial y}$, $\frac{\partial V}{\partial z}$).
 
-**3.** Using these gradients, we can compute the three dimensional gradient magnitude for each video.
+**3.** Using these gradients, we can compute the three-dimensional gradient magnitude for each video.
 
 $$
 G = \sqrt{\left( \frac{\partial V}{\partial x}\right)^2 + \left( \frac{\partial V}{\partial y} \right)^2 + \left( \frac{\partial V}{\partial z}\right)^2}
@@ -253,16 +254,16 @@ $$
 **4.** Generally for images ($I$), we compute the gradient direction by $\theta = \arctan \left( \frac{\frac{\partial I}{\partial y}}{\frac{\partial I}{\partial x}} \right)$ [2]. Since we have videos, we must compute the azimuthal angle and the polar angle to capture the 3D feature-space [4].
 
 $$
-\theta_{azimuth} = \arctan \left( \frac{\frac{\partial V}{\partial y}}{\frac{\partial V}{\partial x}} \right) \\
+\theta_{azimuth} = \arctan \left( \frac{\frac{\partial V}{\partial y}}{\frac{\partial V}{\partial x}} \right)
 $$
 
 $$
-\phi_{polar} = \arctan \left( \frac{\sqrt{\left( \frac{\partial V}{\partial x}\right)^2 + \left( \frac{\partial V}{\partial y} \right)^2}}{\frac{\partial V}{\partial z}} \right) \\
+\phi_{polar} = \arctan \left( \frac{\sqrt{\left( \frac{\partial V}{\partial x}\right)^2 + \left( \frac{\partial V}{\partial y} \right)^2}}{\frac{\partial V}{\partial z}} \right)
 $$
 
 **5.** With our three sets of features, we can now partition the video into cells [3]. In our case, the cell size is ($5$, $6$, $5$), which will group sets of 180 pixels together.
 
-**6.** With our grouped pixels, we cluster the gradient magnitudes of each pixel ($G_{(i, j, k)}$) into bins based on the azimuthal and polar angles. With $9$ bins, we sum the gradient magnitudes for all the pixels belonging to each bin for both types of angles, which reduces the dimensionality from $180$ points in each cell to  $9*2 = 18$ points per cell. We can then save these results to disk.
+**6.** With our grouped pixels, we cluster the gradient magnitudes of each pixel ($G_{(i, j, k)}$) into bins based on the azimuthal and polar angles. With $9$ bins, we sum the gradient magnitudes for all the pixels belonging to each bin for both types of angles, which reduces the dimensionality from $180$ points in each cell to $9 \times 2 = 18$ points per cell. We can then save these results to disk.
 
 #### Visualizing Gradient Magnitude, Azimuthal Angle, and Polar Angle
 
