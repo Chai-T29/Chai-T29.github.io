@@ -71,6 +71,7 @@ for file in tqdm(speech_files):
 print("Download complete.")
 ~~~
 </Details>
+<br>
 
 Once you download the data, you should have 1440 videos in a folder called Speech. Here are some example frames from the videos:
 
@@ -80,7 +81,7 @@ Once you download the data, you should have 1440 videos in a folder called Speec
 
 Once we have the data downloaded and ready to go, we need to reduce the size of each frame and standardize the number of frames in each video to a desired number. This keeps our data compact and reduces the amount of redundancy in our data. For example, we can standardize the frame count to 50 so that every video only has 50 frames. This also makes our analysis easier because we can combine all the videos into one tensor.
 
-<details>
+<Details markdown="block">
 <summary>Click here to view the code</summary>
 
 ~~~python
@@ -114,13 +115,14 @@ def interpolate_frames(frames, target_frame_count):
 
     return interpolated_frames
 ~~~
-</details>
+</Details>
+<br>
     
 #### Processing Each Zip File
 
 Using these two functions, we can now process each video, but we still need to create our training and testing tensors. To do this, we need to access data for each of the actors in the speech dataset. Each actor contains about 60 videos that are relevant to this project. We randomly split the videos into training and testing (40 training and 20 testing) for each actor, and merge the videos (and labels) into combined tensors. Once we have tensors for each zip file, we combine them together into our full training and testing datasets. Keep in mind, the training and testing tensors so far is only for the video data, so we will need other code for processing the audio data. 
 
-<details>
+<Details markdown="block">
 <summary>Click here to view the code</summary>
 
 ~~~python
@@ -215,13 +217,8 @@ for zip_filename in tqdm(os.listdir(folder_path), desc='Total Progress'):
         gc.collect()
         i += 1
 ~~~
-</details>
+</Details>
+<br>
 
 ## Video Feature Extraction
 Now that we have our video data loaded, we can start doing some fun analysis!
-
-
-
-
-
-
