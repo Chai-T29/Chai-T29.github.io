@@ -277,7 +277,10 @@ You might be wondering--what does all this crazy math look like if you were to v
   Your browser does not support the video tag.
 </video>
 
-
+<video width="640" height="480" controls>
+  <source src="{{ '/assets/visualizations/video_features.mp4' | relative_url }}" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 
 
