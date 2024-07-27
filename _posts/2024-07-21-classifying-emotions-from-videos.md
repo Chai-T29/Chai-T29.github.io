@@ -272,7 +272,7 @@ $$
 
 You might be wondering--what does all this crazy math look like if you were to visualize it? This is what it would look like:
 
-<iframe src="https://youtu.be/Vm-0o4YNdD4" width="560" height="315" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+<iframe src="https://www.youtube.com/watch?v=Vm-0o4YNdD4" width="560" height="315" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 
 
 
