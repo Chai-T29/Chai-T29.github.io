@@ -221,4 +221,51 @@ for zip_filename in tqdm(os.listdir(folder_path), desc='Total Progress'):
 <br>
 
 ## Video Feature Extraction
-Now that we have our video data loaded, we can start doing some fun analysis!
+Now that we have our video data loaded, we need to extract relevant information from the videos. To do this, I implemented a customized function based on the popular histogram of oriented gradients algorithm, but in 3D! The image below shows an example of how the 2D approach works.
+
+![2D-HOG](https://github.com/user-attachments/assets/9e43d1b6-4b51-4bf5-a2b6-69f338c7e672)
+
+### Breakdown of Custom 3D Histogram of Oriented Gradients for Dimensionality Reduction
+
+The formulation of this Histogram of Oriented Gradients algorithm is loosely based off of recent research in the field of computer vision. However, this project translates this approach for 3 dimensions. Here's an overview of the methodology that is applied to both training and testing datasets:
+
+**1.** Iterate through every sample, convert the frames to grayscale, and (optionally) apply the following Gaussian filter to each frame of the video ($V$):
+
+$$Gaussian\>Filter \> \Longrightarrow \> \frac{1}{1115}\begin{pmatrix}
+  1 & 4 & 7 & 10 & 7 & 4 & 1 \\
+  4 & 12 & 26 & 33 & 26 & 12 & 4 \\
+  7 & 26 & 55 & 71 & 55 & 26 & 7 \\
+  10 & 33 & 71 & 91 & 71 & 33 & 10 \\
+  7 & 26 & 55 & 71 & 55 & 26 & 7 \\
+  4 & 12 & 26 & 33 & 26 & 12 & 4 \\
+  1 & 4 & 7 & 10 & 7 & 4 & 1
+\end{pmatrix} \\
+$$
+
+**2.** We then compute the gradients with respect to the height, width [1], and frames ($\frac{\partial V}{\partial x}$, $\frac{\partial V}{\partial y}$, $\frac{\partial V}{\partial z}$).
+
+**3.** Using these gradients, we can compute the three dimensional gradient magnitude for each video.
+
+$$
+G = \sqrt{\left( \frac{\partial V}{\partial x}\right)^2 + \left( \frac{\partial V}{\partial y} \right)^2 + \left( \frac{\partial V}{\partial z}\right)^2}
+$$
+
+**4.** Generally for images ($I$), we compute the gradient direction by $\theta = \arctan \left( \frac{\frac{\partial I}{\partial y}}{\frac{\partial I}{\partial x}} \right)$ [2]. Since we have videos, we must compute the azimuthal angle and the polar angle to capture the 3D feature-space [4].
+
+$$
+\theta_{azimuth} = \arctan \left( \frac{\frac{\partial V}{\partial y}}{\frac{\partial V}{\partial x}} \right) \\
+$$
+
+$$
+\phi_{polar} = \arctan \left( \frac{\sqrt{\left( \frac{\partial V}{\partial x}\right)^2 + \left( \frac{\partial V}{\partial y} \right)^2}}{\frac{\partial V}{\partial z}} \right) \\
+$$
+
+**5.** With our three sets of features, we can now partition the video into cells [3]. In our case, the cell size is ($5$, $6$, $5$), which will group sets of 180 pixels together.
+
+**6.** With our grouped pixels, we cluster the gradient magnitudes of each pixel ($G_{(i, j, k)}$) into bins based on the azimuthal and polar angles. With $9$ bins, we sum the gradient magnitudes for all the pixels belonging to each bin for both types of angles, which reduces the dimensionality from $180$ points in each cell to  $9*2 = 18$ points per cell. We can then save these results to disk.
+
+
+
+
+
+
