@@ -21,7 +21,7 @@ This project consists of four main steps. If you are here just for a casual read
 ## Loading the Data
 To start this project off, we need to download data from [Zenodo's website](https://zenodo.org/records/1188976). The data is called the Ryerson Audio-Visual Database of Emotional Speech and Song. For this project, we will only be focusing on the speech data. Here's the libraries you will need to start off:
 
-~~~python
+```python
 import requests
 import os
 from tqdm.notebook import tqdm
@@ -33,7 +33,7 @@ from io import BytesIO
 import tempfile
 import matplotlib.pyplot as plt
 %matplotlib inline
-~~~
+```
 
 #### Downloading the Data
 
@@ -42,7 +42,7 @@ If you choose to get an api key from their website, you can use the code below t
 <Details markdown="block">
 <summary>Click here to view the code</summary>
     
-~~~python
+```python
 record_id = '1188976'
 response = requests.get(f'https://zenodo.org/api/records/{record_id}', params={'access_token': ACCESS_TOKEN})
 data = response.json()
@@ -69,7 +69,7 @@ for file in tqdm(speech_files):
         print(f"Downloaded: {file_name}")
 
 print("Download complete.")
-~~~
+```
 </Details>
 <br>
 
@@ -84,7 +84,7 @@ Once we have the data downloaded and ready to go, we need to reduce the size of 
 <Details markdown="block">
 <summary>Click here to view the code</summary>
 
-~~~python
+```python
 def resize_frame(frame, scale_factor):
     """Resizes a frame by a given scale factor."""
 
@@ -114,7 +114,7 @@ def interpolate_frames(frames, target_frame_count):
             interpolated_frames.append(interpolated_frame)
 
     return interpolated_frames
-~~~
+```
 </Details>
 <br>
     
@@ -125,7 +125,7 @@ Using these two functions, we can now process each video, but we still need to c
 <Details markdown="block">
 <summary>Click here to view the code</summary>
 
-~~~python
+```python
 def process_zip_file(zip_path, target_frame_count, scale_factor, train_size):
     """Processes a zip file and returns training and testing tensors."""
 
@@ -216,7 +216,7 @@ for zip_filename in tqdm(os.listdir(folder_path), desc='Total Progress'):
 
         gc.collect()
         i += 1
-~~~
+```
 </Details>
 <br>
 
