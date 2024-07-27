@@ -39,11 +39,11 @@ import matplotlib.pyplot as plt
 
 If you choose to get an api key from their website, you can use the code below to download the data to your computer. But, this data is extremely large, so unless your computer is capable of handling large data, I would not recommend you do this locally.
 
-<details>
 <summary>Click here for the code</summary>
+<details>
+
   
 ```python
-
 record_id = '1188976'
 response = requests.get(f'https://zenodo.org/api/records/{record_id}', params={'access_token': ACCESS_TOKEN})
 data = response.json()
@@ -70,13 +70,11 @@ for file in tqdm(speech_files):
         print(f"Downloaded: {file_name}")
 
 print("Download complete.")
-
 ```
 </details>
 
 Once you download the data, you should have 1440 videos in a folder called Speech. Here are some example frames from the videos:
-![RAVDESS_Examples](https://github.com/user-attachments/assets/6ce61d4e-210c-4405-87c5-15e68d8bdc92)
-
+![RAVDESS_Examples](https://github.com/user-attachments/assets/cd35df22-1211-4d2e-b98b-43d539f7e4f0)
 
 #### Processing Each Video
 
@@ -86,7 +84,6 @@ Once we have the data downloaded and ready to go, we need to reduce the size of 
 <summary>Click here for the code</summary>
 
 ```python
-
 def resize_frame(frame, scale_factor):
     """Resizes a frame by a given scale factor."""
 
@@ -116,7 +113,6 @@ def interpolate_frames(frames, target_frame_count):
             interpolated_frames.append(interpolated_frame)
 
     return interpolated_frames
-
 ```
 </details>
 
