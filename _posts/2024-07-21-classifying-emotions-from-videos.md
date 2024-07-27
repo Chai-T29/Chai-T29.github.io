@@ -3,7 +3,7 @@ layout: post
 title: "Classifying Emotions from Videos"
 description: "Sentiment Analysis is widely used across industries to track how customers react to various stimuli."
 date: 2024-07-21
-feature_image: images/road.jpg
+feature_image: images/emotions.png
 tags: [computervision, machinelearning, research]
 ---
 
