@@ -21,7 +21,7 @@ This project consists of four main steps. If you are here just for a casual read
 ## Loading the Data
 To start this project off, we need to download data from [Zenodo's website](https://zenodo.org/records/1188976). The data is called the Ryerson Audio-Visual Database of Emotional Speech and Song. For this project, we will only be focusing on the speech data. Here's the libraries you will need to start off:
 
-```python
+~~~python
 import requests
 import os
 from tqdm.notebook import tqdm
@@ -33,13 +33,13 @@ from io import BytesIO
 import tempfile
 import matplotlib.pyplot as plt
 %matplotlib inline
-```
+~~~
 
 #### Downloading the Data
 
 If you choose to get an api key from their website, you can use the code below to download the data to your computer. But, this data is extremely large, so unless your computer is capable of handling large data, I would not recommend you do this locally.
 
-<details>
+<Details markdown="block">
 <summary>Click here to view the code</summary>
     
 ~~~python
@@ -70,7 +70,7 @@ for file in tqdm(speech_files):
 
 print("Download complete.")
 ~~~
-</details>
+</Details>
 
 Once you download the data, you should have 1440 videos in a folder called Speech. Here are some example frames from the videos:
 
