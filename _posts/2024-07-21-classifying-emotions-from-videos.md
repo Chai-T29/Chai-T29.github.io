@@ -39,10 +39,6 @@ import matplotlib.pyplot as plt
 
 If you choose to get an api key from their website, you can use the code below to download the data to your computer. But, this data is extremely large, so unless your computer is capable of handling large data, I would not recommend you do this locally.
 
-<summary>Click here for the code</summary>
-<details>
-
-  
 ```python
 record_id = '1188976'
 response = requests.get(f'https://zenodo.org/api/records/{record_id}', params={'access_token': ACCESS_TOKEN})
@@ -71,9 +67,9 @@ for file in tqdm(speech_files):
 
 print("Download complete.")
 ```
-</details>
 
 Once you download the data, you should have 1440 videos in a folder called Speech. Here are some example frames from the videos:
+
 ![RAVDESS_Examples](https://github.com/user-attachments/assets/cd35df22-1211-4d2e-b98b-43d539f7e4f0)
 
 #### Processing Each Video
