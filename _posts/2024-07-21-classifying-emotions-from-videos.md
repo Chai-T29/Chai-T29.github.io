@@ -78,6 +78,7 @@ Once we have the data downloaded and ready to go, we need to reduce the size of 
 
 <details>
 <summary>Click here for the code</summary>
+Functions for resizing and interpolating frames:
 
 ```python
 def resize_frame(frame, scale_factor):
