@@ -272,14 +272,7 @@ $$
 
 You might be wondering--what does all this crazy math look like if you were to visualize it? This is what it would look like:
 
-<video width="1500" height="700" height="500" controls muted loop autoplay>
-  <source src="https://github.com/Chai-T29/Chai-T29.github.io/tree/e6f7b47ec4726d30cc5a94c85a8e4b61af953dc8/visualizations/video_features.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
-
-Video
-
-https://github.com/user-attachments/assets/a566c937-b41f-41b4-8116-136930423ffd
+<iframe width="560" height="315" src="https://youtu.be/Vm-0o4YNdD4" frameborder="0" allowfullscreen></iframe>
 
 
 
