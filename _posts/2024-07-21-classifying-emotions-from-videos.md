@@ -225,9 +225,9 @@ Now that we have our video data loaded, we need to extract relevant information 
 
 ![2D-HOG](https://github.com/user-attachments/assets/9e43d1b6-4b51-4bf5-a2b6-69f338c7e672)
 
-### Breakdown of Custom 3D Histogram of Oriented Gradients for Dimensionality Reduction
+#### Breakdown of Custom 3D Histogram of Oriented Gradients for Dimensionality Reduction
 
-The formulation of this Histogram of Oriented Gradients algorithm is loosely based off of recent research in the field of computer vision. However, this project translates this approach for 3 dimensions. Here's an overview of the methodology that is applied to both training and testing datasets:
+The formulation of this Histogram of Oriented Gradients algorithm is loosely based off of recent research in the field of computer vision. However, this project translates this approach for 3 dimensions. Below is an overview of the methodology that is applied to both training and testing datasets. If you are not too fond of math, you can skip the steps below!
 
 **1.** Iterate through every sample, convert the frames to grayscale, and (optionally) apply the following Gaussian filter to each frame of the video ($V$):
 
@@ -263,6 +263,8 @@ $$
 **5.** With our three sets of features, we can now partition the video into cells [3]. In our case, the cell size is ($5$, $6$, $5$), which will group sets of 180 pixels together.
 
 **6.** With our grouped pixels, we cluster the gradient magnitudes of each pixel ($G_{(i, j, k)}$) into bins based on the azimuthal and polar angles. With $9$ bins, we sum the gradient magnitudes for all the pixels belonging to each bin for both types of angles, which reduces the dimensionality from $180$ points in each cell to  $9*2 = 18$ points per cell. We can then save these results to disk.
+
+#### Visualizing Gradient Magnitude, Azimuthal Angle, and Polar Angle
 
 
 
