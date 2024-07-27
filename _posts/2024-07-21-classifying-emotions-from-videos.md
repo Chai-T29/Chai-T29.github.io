@@ -227,7 +227,8 @@ Now that we have our video data loaded, we need to extract relevant information 
 
 #### Breakdown of Custom 3D Histogram of Oriented Gradients for Dimensionality Reduction
 
-The formulation of this Histogram of Oriented Gradients algorithm is loosely based off of recent research in the field of computer vision. However, this project translates this approach for 3 dimensions. Below is an overview of the methodology that is applied to both training and testing datasets. If you are not too fond of math, you can skip the steps below!
+The formulation of this Histogram of Oriented Gradients algorithm is loosely based off of recent research in the field of computer vision. However, this project translates this approach for 3 dimensions. Below is an overview of the methodology that is applied to both training and testing datasets. If you are not too fond of math, you can skip to the [next section](#visualizing-gradient-magnitude-azimuthal-angle-and-polar-angle)
+)!
 
 **1.** Iterate through every sample, convert the frames to grayscale, and (optionally) apply the following Gaussian filter to each frame of the video ($V$):
 
