@@ -266,10 +266,11 @@ $$
 
 **6.** With our grouped pixels, we cluster the gradient magnitudes of each pixel ($G_{(i, j, k)}$) into bins based on the azimuthal and polar angles. With $9$ bins, we sum the gradient magnitudes for all the pixels belonging to each bin for both types of angles, which reduces the dimensionality from $180$ points in each cell to $9 \times 2 = 18$ points per cell. We can then save these results to disk.
 
+<br>
+
 #### Visualizing Gradient Magnitude, Azimuthal Angle, and Polar Angle
 
-
-
+You might be wondering--what does all this crazy math look like if you were to visualize it? This is what it would look like:
 
 
 
