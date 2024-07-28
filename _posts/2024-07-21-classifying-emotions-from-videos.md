@@ -10,6 +10,8 @@ tags: [computervision, machinelearning, research]
 Sentiment Analysis is widely used across industries to track how customers react to various stimuli. Now, with the rise of social media and advanced machine learning algorithms, we are able to analyze many different types of data to make informed decisions on business strategy. One such recent breakthrough is the use of video and audio data to classify human emotions, and this project covers a detailed approach in doing so without any complex neural networks. No matter how experienced you are, I'm sure that you will find this project very interesting!
 <!--more-->
 
+<br>
+
 ## Contents
 
 This project consists of four main steps. If you are here just for a casual read, then skip over to the second section.
@@ -17,6 +19,8 @@ This project consists of four main steps. If you are here just for a casual read
 2.  [Video Feature Extraction](#video-feature-extraction)
 3.  [Audio Feature Extraction](#audio-feature-extraction)
 4.  [Emotion Classification](#emotion-classification)
+
+<br>
 
 ## Loading the Data
 To start this project off, we need to download data from [Zenodo's website](https://zenodo.org/records/1188976). The data is called the Ryerson Audio-Visual Database of Emotional Speech and Song. For this project, we will only be focusing on the speech data. Here's the libraries you will need to start off:
@@ -34,6 +38,8 @@ import tempfile
 import matplotlib.pyplot as plt
 %matplotlib inline
 ```
+
+<br>
 
 #### Downloading the Data
 
@@ -76,6 +82,8 @@ print("Download complete.")
 Once you download the data, you should have 1440 videos in a folder called Speech. Here are some example frames from the videos:
 
 ![RAVDESS_Examples](https://github.com/user-attachments/assets/cd35df22-1211-4d2e-b98b-43d539f7e4f0)
+
+<br>
 
 #### Processing Each Video
 
@@ -226,6 +234,10 @@ Now that we have our video data loaded, we need to extract relevant information 
 
 ![2D-HOG](https://github.com/user-attachments/assets/9e43d1b6-4b51-4bf5-a2b6-69f338c7e672)
 
+Source: https://www.sciencedirect.com/topics/computer-science/histogram-of-oriented-gradient
+
+<br>
+
 Here are some libraries to get us started:
 
 ```python
@@ -237,6 +249,8 @@ import gc
 import matplotlib.pyplot as plt
 from tqdm.notebook import tqdm
 ```
+
+<br>
 
 #### Breakdown of Custom 3D Histogram of Oriented Gradients for Dimensionality Reduction
 
@@ -418,7 +432,7 @@ import gc
 ```
 
 #### Breakdown of Feature Engineering and Extraction Process
-The audio feature extraction process in the code below is a customized multi-step process, which is formulated as shown below. Again, if you aren't the biggest fan of math, you can skip to the [next section](#).
+The audio feature extraction process in the code below is a customized multi-step process, which is formulated as shown below.
 
 **1.** Process the audio files using Librosa and manipulate the audio by adding noise, changing the pitch, and changing the pitch of the audio to get multiple variations of the same audio sample.
 
@@ -444,30 +458,20 @@ Pitch Changed Audio (-6)
   <source src="{{ '/assets/audio/03-01-01-01-01-01-01_pitch_down.wav' | relative_url }}" type="audio/wav">
 </audio>
 
+<br>
+
 **2.** For each of the transformed audio files, we extract the following features using Librosa:
-  -  Mel-Frequency Cepstal Coefficients (MFCCs): A representation of the short-term power spectrum of a sound, based on a linear cosine transform of a log power spectrum on a nonlinear mel scale of frequency.
+  -  Mel-Frequency Cepstal Coefficients (MFCCs): A representation of the short-term power spectrum of a sound, based on a linear cosine transform of a log power spectrum on a nonlinear mel scale of frequency. https://librosa.org/doc/main/generated/librosa.feature.mfcc.html
 
-https://librosa.org/doc/main/generated/librosa.feature.mfcc.html
+  - Mel Spectogram: A spectrogram where the frequencies are converted to the mel scale, which approximates the human ear's response more closely than the linear frequency scale. https://librosa.org/doc/main/generated/librosa.feature.melspectrogram.html
 
-  - Mel Spectogram: A spectrogram where the frequencies are converted to the mel scale, which approximates the human ear's response more closely than the linear frequency scale.
+  - Zero Crossing Rate (ZCR): The rate at which the audio signal changes sign from positive to negative or vice versa. It is a measure of the noisiness of the signal. https://librosa.org/doc/main/generated/librosa.feature.zero_crossing_rate.html
 
-https://librosa.org/doc/main/generated/librosa.feature.melspectrogram.html
+  - Root Mean Square Energy (RMSE): A measure of the energy in the audio signal, calculated as the square root of the mean squared values of an audio signal. https://librosa.org/doc/main/generated/librosa.feature.rms.html
 
-  - Zero Crossing Rate (ZCR): The rate at which the audio signal changes sign from positive to negative or vice versa. It is a measure of the noisiness of the signal.
+  - Chromagram: A representation of 12 different pitch classes, or semitones, of a musical octave. They are calculated by mapping the entire frequency spectrum onto these 12 bins. https://librosa.org/doc/main/generated/librosa.feature.chroma_stft.html
 
-https://librosa.org/doc/main/generated/librosa.feature.zero_crossing_rate.html
-
-  - Root Mean Square Energy (RMSE): A measure of the energy in the audio signal, calculated as the square root of the mean squared values of an audio signal.
-
-https://librosa.org/doc/main/generated/librosa.feature.rms.html
-
-  - Chromagram: A representation of 12 different pitch classes, or semitones, of a musical octave. They are calculated by mapping the entire frequency spectrum onto these 12 bins.
-
-https://librosa.org/doc/main/generated/librosa.feature.chroma_stft.html
-
-  - Spectral Contrast: A measure of the difference in amplitude between peaks and valleys in a sound spectrum.
-
-https://librosa.org/doc/main/generated/librosa.feature.spectral_contrast.html
+  - Spectral Contrast: A measure of the difference in amplitude between peaks and valleys in a sound spectrum. https://librosa.org/doc/main/generated/librosa.feature.spectral_contrast.html
 
 It might help to visualize what these features look like:
 
@@ -522,8 +526,234 @@ The B-Spline transformation reduces the dimensionality from the image earlier to
 <br>
 
 **5.** Now, we just have to combine the data and save it disk.
+<br>
 
-#### 
+#### Implementing the algorithm
+
+<Details markdown="block">
+<summary>Click here to view the code</summary>
+
+```python
+def add_noise(y, noise_factor=0.005):
+    """Add noise to the audio signal"""
+
+    noise = np.random.randn(len(y))
+    augmented_data = y + noise_factor * noise
+    return augmented_data
+
+def change_pitch(y, sr, n_steps):
+    """Change the pitch of the audio signal"""
+
+    return librosa.effects.pitch_shift(y, sr=sr, n_steps=n_steps)
+
+def change_speed(y, speed_factor):
+    """Change the speed of the audio signal"""
+
+    return librosa.effects.time_stretch(y, rate=speed_factor)
+
+def lse_solver(X, y):
+    """Least Squares Estimation Solver"""
+
+    return np.linalg.inv(X.T @ X) @ X.T @ y
+
+def transform_features(y, sr):
+    """Transform the audio signal and merge the data"""
+
+    mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13).T
+    mels = librosa.feature.melspectrogram(y=y, sr=sr, hop_length=512, n_mels=128)
+    zcr = librosa.feature.zero_crossing_rate(y, frame_length=2048, hop_length=512).T
+    rmse = librosa.feature.rms(y=y, frame_length=2048, hop_length=512).T
+    chroma = librosa.feature.chroma_stft(y=y, sr=sr, hop_length=512).T
+    spectral_contrast = librosa.feature.spectral_contrast(y=y, sr=sr, hop_length=512).T
+
+    features = np.concatenate((mfccs, zcr, rmse, chroma, spectral_contrast), axis=1)
+
+    del mfccs
+    del mels
+    del zcr
+    del rmse
+    del chroma
+    del spectral_contrast
+    gc.collect()
+
+    return features
+
+def extract_features(y, sr, nknots=10, order=4):
+    """Extract features from the audio signal using B-Splines"""
+
+    features = transform_features(y, sr)
+    m, n = features.shape
+
+    knots = np.linspace(0, 1, nknots)
+    xx = np.linspace(0, 1, m)
+
+    bs = BSplineBasis(knots=knots, order=order)
+    bs_basis = bs(xx).T[0]
+
+    bs_features = lse_solver(bs_basis, features)
+
+    del bs
+    del bs_basis
+    del features
+    gc.collect()
+
+    return bs_features
+
+nknots = 12
+Audio_data = np.zeros((60*24, nknots+2, 34*8), dtype=np.float32)
+
+inds = np.zeros((60*24, 7), dtype=np.uint8)
+i = 0
+with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+    for folder in tqdm(zip_ref.infolist()):
+        file_name = folder.filename
+        if file_name.endswith('.wav'):
+            with zip_ref.open(folder) as audio_file:
+                idx = np.array(file_name.split('/')[1][:-4].split('-')).astype(np.uint8)
+                inds[i, :] = idx
+
+                y, sr = librosa.load(audio_file)
+
+                y_noise = add_noise(y)
+                y_pitch1 = change_pitch(y, sr, 4)
+                y_pitch2 = change_pitch(y, sr, -6)
+                y_pitch3 = change_pitch(y, sr, 3)
+                y_speed1 = change_speed(y, 1.5)
+                y_speed2 = change_speed(y, 2.0)
+                y_speed3 = change_speed(y, 0.8)
+                y_speed4 = change_speed(y, 0.5)
+
+                features1 = extract_features(y_noise, sr, nknots, 4)
+                features2 = extract_features(y_pitch1, sr, nknots, 4)
+                features3 = extract_features(y_pitch2, sr, nknots, 4)
+                features4 = extract_features(y_pitch3, sr, nknots, 4)
+                features5 = extract_features(y_speed1, sr, nknots, 4)
+                features6 = extract_features(y_speed2, sr, nknots, 4)
+                features7 = extract_features(y_speed3, sr, nknots, 4)
+                features8 = extract_features(y_speed4, sr, nknots, 4)
+
+                features = np.concatenate((features1, features2, features3, features4, features5, features6, features7, features8), axis=1)
+                m, n = features.shape
+
+                Audio_data[i, ...] = features
+
+                del features, features1, features2, features3, features4, \
+                    features5, features6, features7, features8, y_noise, y_pitch1, y_pitch2, y_pitch3, \
+                    y_speed1, y_speed2, y_speed3, y_speed4, y, sr
+
+                gc.collect()
+                i += 1
+```
+</Details>
+<br>
+
+## Emotion Classification
+
+Now that we finished most of the tedious work, we just have a couple more steps till the finish line! Here's the necessary imports for this section:
+
+<Details markdown="block">
+<summary>Click here to view the code</summary>
+
+```python
+import os
+import gc
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+%matplotlib inline
+import seaborn as sns
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.neural_network import MLPClassifier
+from tensorly.tenalg import multi_mode_dot
+from tensorly.decomposition import partial_tucker
+from tqdm.notebook import tqdm
+```
+</Details>
+<br>
+
+#### Partial Tucker Decomposition for Additional Dimensionality Reduction
+
+Currently, the shapes of the data are as follows:
+
+- video_train --> ($960$, $48$, $71$, $10$, $9$, $2$)
+- video_test --> ($480$, $48$, $71$, $10$, $9$, $2$)
+- audio_train --> ($960$, $14$, $272$)
+- audio_test --> ($480$, $14$, $272$)
+
+So, if we were to flatten out the data, we would have $48 * 71 * 10 * 9 * 2 = 613440$ columns for the videos, and $14 * 272 = 3808$ columns for the audio data, which is just too large. We need to reduce the dimensionality further using higher-order PCA, or Tucker Decomposition.
+
+Below is a brief overview of how Tucker Decomposition works. Again, if you're not the biggest fan of math, you can skip to the [next section]().
+
+Given a tensor $\mathcal{X} \in \mathbb{R}^{I_1 \times I_2 \times \cdots \times I_N}$, Tucker decomposition approximates $\mathcal{X}$ as [1]:
+
+$$
+\mathcal{X} \approx \mathcal{G} \times_1 A^{(1)} \times_2 A^{(2)} \times_3 \cdots \times_N A^{(N)}
+$$
+
+where:
+- $\mathcal{G} \in \mathbb{R}^{J_1 \times J_2 \times \cdots \times J_N}$ is the core tensor.
+- $A^{(n)} \in \mathbb{R}^{I_n \times J_n}$ are the factor matrices for each mode $n$.
+
+The operator $\times_n$ denotes the mode-$n$ product between a tensor and a matrix. Specifically, the mode-$n$ product of a tensor $\mathcal{G}$ with a matrix $A$ is defined as:
+
+$$
+(\mathcal{G} \times_n A)_{i_1 i_2 \cdots i_{n-1} j i_{n+1} \cdots i_N} = \sum_{i_n} \mathcal{G}_{i_1 i_2 \cdots i_N} A_{j i_n}
+$$
+<br>
+
+This image more clearly demonstrates the math:
+
+![Third-order-Tucker-decomposition](https://github.com/user-attachments/assets/235fa466-0aaf-49df-95a8-876c40171dd5)
+
+Source: https://www.researchgate.net/figure/Third-order-Tucker-decomposition_fig1_257482079
+
+<br>
+
+<Details markdown="block">
+<summary>Click here to view the code</summary>
+
+```python
+# Video Tucker Decomposition
+video_ranks = [8, 8, 3, 1]
+video_modes = [1, 2, 3, 5]
+
+temp_data, _ = partial_tucker(video_train, video_ranks, modes=video_modes, verbose=True, tol=1e-4)
+
+V_train = temp_data[0]
+video_train_factors = temp_data[1]
+
+del temp_data
+gc.collect()
+
+V_test = multi_mode_dot(video_test, [U.T for U in video_train_factors], modes=video_modes)
+
+V_train = V_train.reshape(V_train.shape[0], -1)
+V_test = V_test.reshape(V_test.shape[0], -1)
+
+
+# Audio Tucker Decomposition
+audio_ranks = [10, 150]
+audio_modes = [1, 2]
+
+temp_data, _ = partial_tucker(audio_train, audio_ranks, modes=audio_modes, verbose=True, tol=1e-4)
+
+A_train = temp_data[0]
+audio_train_factors = temp_data[1]
+
+del data
+gc.collect()
+
+A_test = multi_mode_dot(audio_test, [U.T for U in audio_train_factors], modes=audio_modes)
+
+A_train = A_train.reshape(A_train.shape[0], -1)
+A_test = A_test.reshape(A_test.shape[0], -1)
+
+print(A_train.shape)
+print(A_test.shape)
+```
+</Details>
+<br>
+
 
 ### References:
 [1] SpringerLink (Online service), Panigrahi, C. R., Pati, B., Mohapatra, P., Buyya, R., & Li, K. (2021). Progress in Advanced Computing and Intelligent Engineering: Proceedings of ICACIE 2019, Volume 1 (1st ed. 2021.). Springer Singapore : Imprint: Springer. https://doi.org/10.1007/978-981-15-6584-7
