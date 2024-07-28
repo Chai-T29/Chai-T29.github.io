@@ -2,7 +2,7 @@
 layout: post
 title: "ECG Heart Abnormalities"
 description: "ECG, or electrocardiogram, data measures the activity of the heart, and doctors use this information to help diagnose a plethora of heart diseases."
-date: 2024-05-05
+date: 2024-05-22
 feature_image: images/ecg.jpg
 tags: [tips, work]
 ---
