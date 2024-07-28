@@ -424,7 +424,25 @@ The audio feature extraction process in the code below is a customized multi-ste
 
 Here are some examples of what this sounds like:
 
+##### Original Audio
+<audio controls>
+  <source src="{{ '/assets/audio/03-01-01-01-01-01-01_original.wav' | relative_url }}" type="audio/wav">
+</audio>
 
+##### Noise Audio
+<audio controls>
+  <source src="{{ '/assets/audio/03-01-01-01-01-01-01_noise.wav' | relative_url }}" type="audio/wav">
+</audio>
+
+##### Pitch Changed Audio (+4)
+<audio controls>
+  <source src="{{ '/assets/audio/03-01-01-01-01-01-01_pitch_up.wav' | relative_url }}" type="audio/wav">
+</audio>
+
+##### Pitch Changed Audio (-6)
+<audio controls>
+  <source src="{{ '/assets/audio/03-01-01-01-01-01-01_pitch_down.wav' | relative_url }}" type="audio/wav">
+</audio>
 
 **2.** For each of the transformed audio files, we extract the following features using Librosa:
   -  Mel-Frequency Cepstal Coefficients (MFCCs): A representation of the short-term power spectrum of a sound, based on a linear cosine transform of a log power spectrum on a nonlinear mel scale of frequency.
