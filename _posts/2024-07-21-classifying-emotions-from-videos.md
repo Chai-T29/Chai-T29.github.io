@@ -220,10 +220,23 @@ for zip_filename in tqdm(os.listdir(folder_path), desc='Total Progress'):
 </Details>
 <br>
 
+
 ## Video Feature Extraction
 Now that we have our video data loaded, we need to extract relevant information from the videos. To do this, I implemented a customized function based on the popular histogram of oriented gradients algorithm, but in 3D! The image below shows an example of how the 2D approach works.
 
 ![2D-HOG](https://github.com/user-attachments/assets/9e43d1b6-4b51-4bf5-a2b6-69f338c7e672)
+
+Here are some libraries to get us started:
+
+```python
+import os
+import numpy as np
+from scipy.signal import convolve2d
+import tensorly as tl
+import gc
+import matplotlib.pyplot as plt
+from tqdm.notebook import tqdm
+```
 
 #### Breakdown of Custom 3D Histogram of Oriented Gradients for Dimensionality Reduction
 
@@ -268,12 +281,217 @@ $$
 
 <br>
 
+
+#### Implemeting the Algorithm
+
+Now that we have a foundational understanding of the HOG3D algorithm, we can create our custom implementation. I use two main functions--one for calculating the shape of the new data, and one for implementing the HOG3D algorithm itself.
+
+<Details markdown="block">
+<summary>Click here to view the code</summary>
+
+```python
+def calculate_total_descriptor_shape(width, height, n_frames, cell_size, nbins):
+    """Calculate the total shape of the descriptor."""
+
+    cells_per_width = width // cell_size[0]
+    cells_per_height = height // cell_size[1]
+    cells_per_depth = n_frames // cell_size[2]
+
+    return cells_per_width, cells_per_height, cells_per_depth, nbins, 2
+
+def compute_hog3d_rgb(frames, cell_size, nbins, v, gaussian_filter):
+    """Compute the HOG3D features for a video."""
+
+    width, height, channels, n_frames = frames.shape
+    gray_frames = tl.tenalg.mode_dot(frames, np.array([0.2989, 0.5870, 0.1140]), mode=2)
+
+    if gaussian_filter:
+        print('Applying Gaussian Filter')
+        gaussian_filter = np.array([[1, 4, 7, 10, 7, 4, 1],
+                                [4, 12, 26, 33, 26, 12, 4],
+                                [7, 26, 55, 71, 55, 26, 7],
+                                [10, 33, 71, 91, 71, 33, 10],
+                                [7, 26, 55, 71, 55, 26, 7],
+                                [4, 12, 26, 33, 26, 12, 4],
+                                [1, 4, 7, 10, 7, 4, 1]]) / 1115
+
+
+
+        data = np.zeros_like(gray_frames)
+        for i in range(n_frames):
+            data[:, :, i] = convolve2d(gray_frames[:, :, i], gaussian_filter, mode='same')
+    else:
+        data = gray_frames
+        del gray_frames
+        gc.collect()
+
+    gx = np.gradient(data, axis=0)
+    gy = np.gradient(data, axis=1)
+    gz = np.gradient(data, axis=2)
+
+    magnitude = np.sqrt(gx**2 + gy**2 + gz**2)
+    azimuthal_angle = np.arctan2(gy, gx)
+    polar_angle = np.arctan2(np.sqrt(gx**2, gy**2), gz)
+
+    output_shape = calculate_total_descriptor_shape(width, height, n_frames, cell_size, nbins)
+    hog3d_descriptors = np.zeros(output_shape, dtype=np.float32)
+
+    for i in range(0, n_frames - cell_size[2], cell_size[2]):
+        for y in range(0, height - cell_size[1], cell_size[1]):
+            for x in range(0, width - cell_size[0], cell_size[0]):
+                cell_magnitude = magnitude[x:x + cell_size[0], y:y + cell_size[1], i:i + cell_size[2]]
+                cell_azimuthal = azimuthal_angle[x:x + cell_size[0], y:y + cell_size[1], i:i + cell_size[2]]
+                cell_polar = polar_angle[x:x + cell_size[0], y:y + cell_size[1], i:i + cell_size[2]]
+
+                hist_azimuthal, _ = np.histogram(cell_azimuthal, bins=nbins, range=(-np.pi, np.pi), weights=cell_magnitude)
+                hist_polar, _ = np.histogram(cell_polar, bins=nbins, range=(0, np.pi), weights=cell_magnitude)
+
+                hist_azimuthal = hist_azimuthal / (np.linalg.norm(hist_azimuthal) + 1e-6)
+                hist_polar = hist_polar / (np.linalg.norm(hist_polar) + 1e-6)
+
+                hog3d_descriptors[x//cell_size[0], y//cell_size[1], i//cell_size[2], :, 0] = hist_azimuthal
+                hog3d_descriptors[x//cell_size[0], y//cell_size[1], i//cell_size[2], :, 1] = hist_polar
+
+    del cell_magnitude, cell_azimuthal, cell_polar, hist_azimuthal, hist_polar, gx, gy, gz, magnitude, azimuthal_angle, polar_angle
+    gc.collect()
+
+    return hog3d_descriptors
+```
+</Details>
+<br>
+
 #### Visualizing Gradient Magnitude, Azimuthal Angle, and Polar Angle
 
-You might be wondering--what does all this crazy math look like if you were to visualize it? This is what it would look like:
+You might be wondering--what does all this crazy math look like if you were to visualize it? Well, this is what it would look like:
 
 <iframe src="https://www.youtube.com/embed/Vm-0o4YNdD4?autoplay=1&loop=1&playlist=Vm-0o4YNdD4" width="1500" height="700" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 
+#### Creating our HOG3D Dataset
+
+Now that we have our algorithms set up, all we need to do is process each video, apply our dimensionality reduction algorithm, and combine these new datasets together.
+
+<Details markdown="block">
+<summary>Click here to view the code</summary>
+
+```python
+def process_videos(videos, cell_size=(5, 6, 5), nbins=9, gaussian_filter=False):
+    """Process a batch of videos."""
+
+    width, height, channels, n_frames, video_count = videos.shape
+
+    for v in tqdm(range(video_count)):
+        hog3d_descriptors = compute_hog3d_rgb(videos[:, :, :, :, v].astype(np.float32), cell_size, nbins, v, gaussian_filter)
+        if v == 0:
+            descriptors_shape = hog3d_descriptors.shape
+            all_descriptors = np.zeros((video_count, *descriptors_shape), dtype=np.float32)
+
+        all_descriptors[v] += hog3d_descriptors
+
+        del hog3d_descriptors
+        gc.collect()
+
+    return all_descriptors
+
+H_train = process_videos(train_videos)
+H_test = process_videos(test_videos)
+```
+</Details>
+<br>
+
+## Audio Feature Extraction
+
+Once we have our video data setup, all we need to do is extract some features for our audio data. Here are some libraries to get us started:
+
+```python
+import os
+import numpy as np
+import librosa
+import librosa.display
+from IPython.display import Audio
+import matplotlib.pyplot as plt
+%matplotlib inline
+import seaborn as sns
+import zipfile
+from skfda.representation.basis import BSplineBasis
+from tqdm.notebook import tqdm
+import gc
+```
+
+#### Breakdown of Feature Engineering and Extraction Process
+The audio feature extraction process in the code below is a customized multi-step process, which is formulated as shown below. Again, if you aren't the biggest fan of math, you can skip to the [next section](#).
+
+**1.** Process the audio files using Librosa and manipulate the audio by adding noise, changing the pitch, and changing the pitch of the audio to get multiple variations of the same audio sample.
+
+Here are some examples of what this sounds like:
 
 
 
+**2.** For each of the transformed audio files, we extract the following features using Librosa:
+  -  Mel-Frequency Cepstal Coefficients (MFCCs): A representation of the short-term power spectrum of a sound, based on a linear cosine transform of a log power spectrum on a nonlinear mel scale of frequency.
+
+https://librosa.org/doc/main/generated/librosa.feature.mfcc.html
+
+  - Mel Spectogram: A spectrogram where the frequencies are converted to the mel scale, which approximates the human ear's response more closely than the linear frequency scale.
+
+https://librosa.org/doc/main/generated/librosa.feature.melspectrogram.html
+
+  - Zero Crossing Rate (ZCR): The rate at which the audio signal changes sign from positive to negative or vice versa. It is a measure of the noisiness of the signal.
+
+https://librosa.org/doc/main/generated/librosa.feature.zero_crossing_rate.html
+
+  - Root Mean Square Energy (RMSE): A measure of the energy in the audio signal, calculated as the square root of the mean squared values of an audio signal.
+
+https://librosa.org/doc/main/generated/librosa.feature.rms.html
+
+  - Chromagram: A representation of 12 different pitch classes, or semitones, of a musical octave. They are calculated by mapping the entire frequency spectrum onto these 12 bins.
+
+https://librosa.org/doc/main/generated/librosa.feature.chroma_stft.html
+
+  - Spectral Contrast: A measure of the difference in amplitude between peaks and valleys in a sound spectrum.
+
+https://librosa.org/doc/main/generated/librosa.feature.spectral_contrast.html
+
+**3.** Once we collect this data, we combine all the extracted features together and create a B-Spline feature space for this data. B-Splines, or Basis Splines, are piece-wise polynomial approximations of a curve. They are defined recursively as such [5]:
+$$
+B_{i, j}(x) = \frac{x - t_i}{t_{i+j} - t_i} B_{i, j-1}(x) + \frac{t_{i+j+1} - x}{t_{i+j+1} - t_{i+1}} B_{i+1, j-1}(x)
+$$
+
+for $j \ge 1$ with the initial condition:
+
+$$
+B_i^0(x) =
+\begin{cases}
+1 & \text{if } t_i \le x < t_{i+1} \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+Here:
+- $B_{i, j}(x)$ is the B-Spline basis function of degree $k$.
+- $x$ is the parameter.
+- $t_i$ are the knots.
+
+The B-Spline curve $C(x)$ of degree $j$ can be defined as a linear combination of these basis functions:
+
+$$
+C(t) = \sum_{i=0}^{n} P_i B_{i, j}(x)
+$$
+
+where $P_i$ are the control points.
+
+**4.** Once we develop this feature space, we project the extracted feature space onto the B-Spline feature space, which effectively transforms the data into a lower dimensional approximation. For example, if we have $12$ knot, then no matter how many columns our data has, we would have knots + $2$, or $14$, columns.
+
+**5.** Now, we just have to combine the data and save it disk.
+
+
+
+### References:
+[1] SpringerLink (Online service), Panigrahi, C. R., Pati, B., Mohapatra, P., Buyya, R., & Li, K. (2021). Progress in Advanced Computing and Intelligent Engineering: Proceedings of ICACIE 2019, Volume 1 (1st ed. 2021.). Springer Singapore : Imprint: Springer. https://doi.org/10.1007/978-981-15-6584-7
+
+[2] Zoubir, Hajar & Rguig, Mustapha & Aroussi, Mohamed & Chehri, Abdellah & Rachid, Saadane. (2022). Concrete Bridge Crack Image Classification Using Histograms of Oriented Gradients, Uniform Local Binary Patterns, and Kernel Principal Component Analysis. Electronics. 11. 3357. 10.3390/electronics11203357. https://doi.org/10.3390/electronics11203357
+
+[3]  S V Shidlovskiy et al 2020 J. Phys.: Conf. Ser. 1611 012072 https://doi:10.1088/1742-6596/1611/1/012072
+
+[4] Nykamp DQ, “Spherical coordinates.” From Math Insight. http://mathinsight.org/spherical_coordinates
+
+[5] Hastie, T., Tibshirani, R., Friedman, J. (2009). Basis Expansions and Regularization. In: The Elements of Statistical Learning. Springer Series in Statistics. Springer, New York, NY. https://doi.org/10.1007/978-0-387-84858-7_5
