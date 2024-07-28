@@ -9,10 +9,10 @@
 lang: en-US
 
 # Site title
-title: "Chaitanya Tatipigari"
+title: "Chaitanya Tatipigari's Data Science Projects"
 
 # A description of your site for meta tag, search engine results.
-description: "Aspiring Data Scientist with a passion for analyzing high-dimensional data. Below are some projects that might spark your interest."
+description: "Chaitanya is an aspiring Data Scientist with a passion for analyzing high-dimensional data. Below are some projects that might spark your interest."
 
 # The subpath of your site, e.g. /blog, for generating urls.
 baseurl: ""
