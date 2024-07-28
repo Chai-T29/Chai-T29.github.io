@@ -4,7 +4,7 @@ title: "ECG Heart Abnormalities"
 description: "ECG, or electrocardiogram, data measures the activity of the heart, and doctors use this information to help diagnose a plethora of heart diseases."
 date: 2024-05-22
 feature_image: images/ecg.jpg
-tags: [tips, work]
+tags: [machinelearning, healthcare]
 ---
 
 ECG, or electrocardiogram, data measures the activity of the heart, and doctors use this information to help diagnose a plethora of heart diseases. The purpose of this project is to develop a quick and scalable solution for early heart-disease detection. Automation in the healthcare industry can help alleviate some of the pressures caused by inefficient human resources. Although this project covers one use-case, this methodology can be applied across many aspects of healthcare analytics. I hope you enjoy this read!
