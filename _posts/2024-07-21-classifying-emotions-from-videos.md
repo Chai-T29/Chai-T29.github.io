@@ -23,7 +23,7 @@ Here are the contents of this project. If you are here just for a casual read, t
 ## Loading the Data
 To start this project off, we need to download data from [Zenodo's website](https://zenodo.org/records/1188976). The data is called the Ryerson Audio-Visual Database of Emotional Speech and Song. For this project, we will only be focusing on the speech data. Here's the libraries you will need to start off:
 
-```python
+```py
 import requests
 import os
 from tqdm.notebook import tqdm
