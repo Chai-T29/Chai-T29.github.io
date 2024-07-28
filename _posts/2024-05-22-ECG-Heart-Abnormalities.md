@@ -31,7 +31,7 @@ ECG data is functional in nature and is considered to be a continuous function. 
 
 ## Understanding our Data
 
-The data consists of 500 training samples and 4500 testing samples. The data for this project, and many others, can be downloaded from the following source: https://www.cs.ucr.edu/%7Eeamonn/time_series_data_2018/
+The data consists of 500 training samples and 4500 testing samples. The data for this project, and many others, can be downloaded from this [source](https://www.cs.ucr.edu/%7Eeamonn/time_series_data_2018/).
 
 Once you download the data, you have to figure out the secret password (it's not too difficult) to unlock the data. To start this project, we'll need the following libraries:
 
@@ -93,7 +93,7 @@ We can see clear separation in the chart above, but how do we classify signals l
 
 B-Splines, or Basis Splines, are piece-wise polynomial approximations of a curve. They are defined recursively as such [1][2]:
 $$
-B_{i, j}(x) = \frac{x - t_i}{t_{i+j} - t_i} B_{i, j-1}(x) + \frac{t_{i+j+1} - x}{t_{i+j+1} - t_{i+1}} B_{i+1, j-1}(x)
+B_{i, j}(x) = \frac{x - t_i}{t_{i+j} - t_i} B_{i, j-1}(x) \\ + \frac{t_{i+j+1} - x}{t_{i+j+1} - t_{i+1}} B_{i+1, j-1}(x)
 $$
 
 for $j \ge 1$ with the initial condition:
