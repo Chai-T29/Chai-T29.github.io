@@ -76,6 +76,8 @@ print("Download complete.")
 ```
 </Details>
 
+<br>
+
 Once you download the data, you should have 1440 videos in a folder called Speech. Here are some example frames from the videos:
 
 ![RAVDESS_Examples](https://github.com/user-attachments/assets/cd35df22-1211-4d2e-b98b-43d539f7e4f0)
