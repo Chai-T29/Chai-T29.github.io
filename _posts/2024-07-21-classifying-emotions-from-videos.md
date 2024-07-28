@@ -478,6 +478,7 @@ It might help to visualize what these features look like:
 <br>
 
 **3.** Once we collect this data, we combine all the extracted features together and create a B-Spline feature space for this data. B-Splines, or Basis Splines, are piece-wise polynomial approximations of a curve. They are defined recursively as such [5]:
+
 $$
 B_{i, j}(x) = \frac{x - t_i}{t_{i+j} - t_i} B_{i, j-1}(x) + \frac{t_{i+j+1} - x}{t_{i+j+1} - t_{i+1}} B_{i+1, j-1}(x)
 $$
