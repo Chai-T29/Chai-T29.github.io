@@ -10,17 +10,15 @@ tags: [computervision, machinelearning, research]
 Sentiment Analysis is widely used across industries to track how customers react to various stimuli. Now, with the rise of social media and advanced machine learning algorithms, we are able to analyze many different types of data to make informed decisions on business strategy. One such recent breakthrough is the use of video and audio data to classify human emotions, and this project covers a detailed approach in doing so without any complex neural networks. No matter how experienced you are, I'm sure that you will find this project very interesting!
 <!--more-->
 
-<br>
-
 ## Contents
 
-This project consists of four main steps. If you are here just for a casual read, then skip over to the second section.
+Here are the contents of this project. If you are here just for a casual read, then skip over to the second section.
 1.  [Loading the Data](#loading-the-data)
 2.  [Video Feature Extraction](#video-feature-extraction)
 3.  [Audio Feature Extraction](#audio-feature-extraction)
 4.  [Emotion Classification](#emotion-classification)
-
-<br>
+5.  [Conclusion](#conclusion)
+6.  [References](#references)
 
 ## Loading the Data
 To start this project off, we need to download data from [Zenodo's website](https://zenodo.org/records/1188976). The data is called the Ryerson Audio-Visual Database of Emotional Speech and Song. For this project, we will only be focusing on the speech data. Here's the libraries you will need to start off:
@@ -77,7 +75,6 @@ for file in tqdm(speech_files):
 print("Download complete.")
 ```
 </Details>
-<br>
 
 Once you download the data, you should have 1440 videos in a folder called Speech. Here are some example frames from the videos:
 
@@ -224,6 +221,9 @@ for zip_filename in tqdm(os.listdir(folder_path), desc='Total Progress'):
 
         gc.collect()
         i += 1
+
+y_train = id_train[:, 2].astype(np.int8) # Extracting the emotion labels from ids
+y_test = id_test[:, 2].astype(np.int8)
 ```
 </Details>
 <br>
@@ -235,8 +235,6 @@ Now that we have our video data loaded, we need to extract relevant information 
 ![2D-HOG](https://github.com/user-attachments/assets/9e43d1b6-4b51-4bf5-a2b6-69f338c7e672)
 
 Source: https://www.sciencedirect.com/topics/computer-science/histogram-of-oriented-gradient
-
-<br>
 
 Here are some libraries to get us started:
 
@@ -526,9 +524,10 @@ The B-Spline transformation reduces the dimensionality from the image earlier to
 <br>
 
 **5.** Now, we just have to combine the data and save it disk.
-<br>
 
 #### Implementing the algorithm
+
+With our understanding of the feature extraction process, we can now implement the Python code to extract these features and combine it into our audio data.
 
 <Details markdown="block">
 <summary>Click here to view the code</summary>
@@ -684,7 +683,7 @@ So, if we were to flatten out the data, we would have $48 * 71 * 10 * 9 * 2 = 61
 
 Below is a brief overview of how Tucker Decomposition works. Again, if you're not the biggest fan of math, you can skip to the [next section]().
 
-Given a tensor $\mathcal{X} \in \mathbb{R}^{I_1 \times I_2 \times \cdots \times I_N}$, Tucker decomposition approximates $\mathcal{X}$ as [1]:
+Given a tensor $\mathcal{X} \in \mathbb{R}^{I_1 \times I_2 \times \cdots \times I_N}$, Tucker decomposition approximates $\mathcal{X}$ as [6]:
 
 $$
 \mathcal{X} \approx \mathcal{G} \times_1 A^{(1)} \times_2 A^{(2)} \times_3 \cdots \times_N A^{(N)}
@@ -711,6 +710,10 @@ Source: https://www.researchgate.net/figure/Third-order-Tucker-decomposition_fig
 
 <Details markdown="block">
 <summary>Click here to view the code</summary>
+
+#### Implementing the algorithm
+
+Tensorly makes it super easy for use to implement Partial Tucker Decomposition, which is a customized form of the full Tucker, but it maintains the integrity of dimensions that aren't being reduced, like the number/order of samples. Once we reduce the video and audio data and flatten it, we can combine them together into our X_train and X_test for classification!
 
 ```python
 # Video Tucker Decomposition
@@ -748,14 +751,42 @@ A_test = multi_mode_dot(audio_test, [U.T for U in audio_train_factors], modes=au
 A_train = A_train.reshape(A_train.shape[0], -1)
 A_test = A_test.reshape(A_test.shape[0], -1)
 
-print(A_train.shape)
-print(A_test.shape)
+# Combining the Data
+X_train = np.concatenate((V_train, A_train), axis=1)
+X_test = np.concatenate((V_test, A_test), axis=1)
+
+print(X_train.shape)
+print(X_test.shape)
 ```
 </Details>
 <br>
 
+#### Training a Multilayer Perceptron Model using Sklearn
 
-### References:
+We could simply train a Support Vector Classifier or Random Forest (and I do on my [Github](https://github.com/Chai-T29)), but I decided to use a simple neural network instead because a lot of the data is not linearly separable.
+
+```python
+mlp = MLPClassifier(alpha=0.07, batch_size=200, epsilon=1e-8, n_iter_no_change=10, learning_rate='adaptive', hidden_layer_sizes=(250, 500, 100), max_iter=1000, random_state=42)
+mlp.fit(X_train, y_train)
+
+y_pred = mlp.predict(X_test)
+```
+Using this model, we get an accuracy of $85.625$%! Considering that we did not use any complex deep learning architectures, this is pretty impressive! Here's a more detailed overview of the performance:
+
+![performance](https://github.com/user-attachments/assets/0673d41a-b006-4420-9a91-6dcb5b949686)
+
+<br>
+
+## Conclusion
+
+This project showcases the potential of a custom approach to emotion classification using multimodal data. By combining a 3D Histograms of Oriented Gradients for video features and advanced audio feature extraction with B-Spline transformations, we were able to create a robust and efficient feature extraction pipeline. The integration of these features through Partial Tucker Decomposition significantly reduced the dimensionality, making our models more efficient without sacrificing performance. The impressive accuracy of our ensemble method underscores the power of combining video and audio data, paving the way for more sophisticated and accurate emotion detection systems in real-world applications. This custom approach not only enhances the accuracy of emotion classification but also demonstrates the potential for broader applications in any field requiring nuanced analysis of multimedia data.
+
+If you've made it this far, thank you for giving this a read and happy learning!
+
+<br>
+
+## References:
+
 [1] SpringerLink (Online service), Panigrahi, C. R., Pati, B., Mohapatra, P., Buyya, R., & Li, K. (2021). Progress in Advanced Computing and Intelligent Engineering: Proceedings of ICACIE 2019, Volume 1 (1st ed. 2021.). Springer Singapore : Imprint: Springer. https://doi.org/10.1007/978-981-15-6584-7
 
 [2] Zoubir, Hajar & Rguig, Mustapha & Aroussi, Mohamed & Chehri, Abdellah & Rachid, Saadane. (2022). Concrete Bridge Crack Image Classification Using Histograms of Oriented Gradients, Uniform Local Binary Patterns, and Kernel Principal Component Analysis. Electronics. 11. 3357. 10.3390/electronics11203357. https://doi.org/10.3390/electronics11203357
@@ -765,3 +796,5 @@ print(A_test.shape)
 [4] Nykamp DQ, “Spherical coordinates.” From Math Insight. http://mathinsight.org/spherical_coordinates
 
 [5] Hastie, T., Tibshirani, R., Friedman, J. (2009). Basis Expansions and Regularization. In: The Elements of Statistical Learning. Springer Series in Statistics. Springer, New York, NY. https://doi.org/10.1007/978-0-387-84858-7_5
+
+[6] Kolda, Tamara G., and Brett W. Bader. "Tensor Decompositions and Applications." *SIAM Review*, vol. 51, no. 3, 2009, pp. 455-500. Society for Industrial and Applied Mathematics. https://doi.org/10.1137/07070111X.
