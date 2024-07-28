@@ -27,6 +27,8 @@ ECG data is functional in nature and is considered to be a continuous function. 
 6.  [Conclusion](#conclusion)
 7.  [References](#references)
 
+<br>
+
 ## Understanding our Data
 
 The data consists of 500 training samples and 4500 testing samples. The data for this project, and many others, can be downloaded from the following source: https://www.cs.ucr.edu/%7Eeamonn/time_series_data_2018/
