@@ -41,6 +41,10 @@ layout: default
         href="https://twitter.com/intent/tweet?text={{ page.title | uri_escape }}&amp;url={{ page.url | absolute_url }}" rel="noopener">Twitter</a>
       <a target="_blank"
         href="https://www.facebook.com/sharer/sharer.php?u={{ page.url | absolute_url }}&amp;t={{ page.title | uri_escape }}" rel="noopener">Facebook</a>
+      <a target="_blank"
+        href="https://www.linkedin.com/shareArticle?mini=true&url={{ page.url | absolute_url }}&title={{ page.title | uri_escape }}" rel="noopener">LinkedIn</a>
+      <a target="_blank"
+        href="https://www.instagram.com/?url={{ page.url | absolute_url }}" rel="noopener">Instagram</a>
     </div><!-- .share-post -->
     <div class="author-box">
       {% if site.data.author.image and site.data.author.image != "" %}
