@@ -19,8 +19,6 @@ ECG data is functional in nature and is considered to be a continuous function. 
 -  How do classification models perform on ECG data?
 -  What insights can we gain about heart abnormalities from our models?
 
-<br>
-
 ## Contents
 
 1.  [Understanding our Data](#understanding-our-data)
@@ -121,9 +119,7 @@ where $P_i$ are the control points.
 
 Once we develop this feature space, we project the extracted feature space onto the B-Spline feature space, which effectively transforms the data into a lower dimensional approximation. For example, if we have $12$ knot, then no matter how many columns our data has, we would have knots + $2$, or $14$, columns.
 
-<br>
-
-#### Implementing the algorithm
+#### Finding Optimal Knots Sequence
 
 Now that we have a foundational understanding of the math for B-Splines, we can implement our algorithm in Python using scikit-fda. As part of the process, we iterate through various knot sequences to find which one yields the highest accuracy. This is a form of cross-validation where we're optimizing the hyperparameter 'nknots'.
 
@@ -277,8 +273,6 @@ X_i(t) \approx \mu(t) + \sum_{k=1}^K \xi_{ik} \phi_k(t)
 $$
 
 With this logic, we can now implement the code in steps.
-
-<br>
 
 #### Computing Mean Functions
 
