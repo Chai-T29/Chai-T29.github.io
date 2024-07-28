@@ -255,19 +255,7 @@ from tqdm.notebook import tqdm
 The formulation of this Histogram of Oriented Gradients algorithm is loosely based off of recent research in the field of computer vision. However, this project translates this approach for 3 dimensions. Below is an overview of the methodology that is applied to both training and testing datasets. If you are not too fond of math, you can skip to the [next section](#visualizing-gradient-magnitude-azimuthal-angle-and-polar-angle)
 )!
 
-**1.** Iterate through every sample, convert the frames to grayscale, and (optionally) apply the following Gaussian filter to each frame of the video ($V$):
-
-$$
-Gaussian\>Filter \> \Longrightarrow \> \frac{1}{1115}\begin{pmatrix}
-  1 & 4 & 7 & 10 & 7 & 4 & 1 \\
-  4 & 12 & 26 & 33 & 26 & 12 & 4 \\
-  7 & 26 & 55 & 71 & 55 & 26 & 7 \\
-  10 & 33 & 71 & 91 & 71 & 33 & 10 \\
-  7 & 26 & 55 & 71 & 55 & 26 & 7 \\
-  4 & 12 & 26 & 33 & 26 & 12 & 4 \\
-  1 & 4 & 7 & 10 & 7 & 4 & 1
-\end{pmatrix}
-$$
+**1.** Iterate through every sample and convert the frames to grayscale.
 
 **2.** We then compute the gradients with respect to the height, width [1], and frames ($\frac{\partial V}{\partial x}$, $\frac{\partial V}{\partial y}$, $\frac{\partial V}{\partial z}$).
 
@@ -459,17 +447,17 @@ Pitch Changed Audio (-6)
 <br>
 
 **2.** For each of the transformed audio files, we extract the following features using Librosa:
-  -  Mel-Frequency Cepstal Coefficients (MFCCs): A representation of the short-term power spectrum of a sound, based on a linear cosine transform of a log power spectrum on a nonlinear mel scale of frequency. https://librosa.org/doc/main/generated/librosa.feature.mfcc.html
+  -  Mel-Frequency Cepstal Coefficients (MFCCs): A representation of the short-term power spectrum of a sound, based on a linear cosine transform of a log power spectrum on a nonlinear mel scale of frequency. [Source](https://librosa.org/doc/main/generated/librosa.feature.mfcc.html)
 
-  - Mel Spectogram: A spectrogram where the frequencies are converted to the mel scale, which approximates the human ear's response more closely than the linear frequency scale. https://librosa.org/doc/main/generated/librosa.feature.melspectrogram.html
+  - Mel Spectogram: A spectrogram where the frequencies are converted to the mel scale, which approximates the human ear's response more closely than the linear frequency scale. [Source](https://librosa.org/doc/main/generated/librosa.feature.melspectrogram.html)
 
-  - Zero Crossing Rate (ZCR): The rate at which the audio signal changes sign from positive to negative or vice versa. It is a measure of the noisiness of the signal. https://librosa.org/doc/main/generated/librosa.feature.zero_crossing_rate.html
+  - Zero Crossing Rate (ZCR): The rate at which the audio signal changes sign from positive to negative or vice versa. It is a measure of the noisiness of the signal. [Source](https://librosa.org/doc/main/generated/librosa.feature.zero_crossing_rate.html)
 
-  - Root Mean Square Energy (RMSE): A measure of the energy in the audio signal, calculated as the square root of the mean squared values of an audio signal. https://librosa.org/doc/main/generated/librosa.feature.rms.html
+  - Root Mean Square Energy (RMSE): A measure of the energy in the audio signal, calculated as the square root of the mean squared values of an audio signal. [Source](https://librosa.org/doc/main/generated/librosa.feature.rms.html)
 
-  - Chromagram: A representation of 12 different pitch classes, or semitones, of a musical octave. They are calculated by mapping the entire frequency spectrum onto these 12 bins. https://librosa.org/doc/main/generated/librosa.feature.chroma_stft.html
+  - Chromagram: A representation of 12 different pitch classes, or semitones, of a musical octave. They are calculated by mapping the entire frequency spectrum onto these 12 bins. [Source](https://librosa.org/doc/main/generated/librosa.feature.chroma_stft.html)
 
-  - Spectral Contrast: A measure of the difference in amplitude between peaks and valleys in a sound spectrum. https://librosa.org/doc/main/generated/librosa.feature.spectral_contrast.html
+  - Spectral Contrast: A measure of the difference in amplitude between peaks and valleys in a sound spectrum. [Source](https://librosa.org/doc/main/generated/librosa.feature.spectral_contrast.html)
 
 It might help to visualize what these features look like:
 
@@ -480,7 +468,7 @@ It might help to visualize what these features look like:
 **3.** Once we collect this data, we combine all the extracted features together and create a B-Spline feature space for this data. B-Splines, or Basis Splines, are piece-wise polynomial approximations of a curve. They are defined recursively as such [5]:
 
 $$
-B_{i, j}(x) = \frac{x - t_i}{t_{i+j} - t_i} B_{i, j-1}(x) + \frac{t_{i+j+1} - x}{t_{i+j+1} - t_{i+1}} B_{i+1, j-1}(x)
+B_{i, j}(x) = \frac{x - t_i}{t_{i+j} - t_i} B_{i, j-1}(x) \\ + \frac{t_{i+j+1} - x}{t_{i+j+1} - t_{i+1}} B_{i+1, j-1}(x)
 $$
 
 for $j \ge 1$ with the initial condition:
