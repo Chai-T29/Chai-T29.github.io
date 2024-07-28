@@ -424,22 +424,22 @@ The audio feature extraction process in the code below is a customized multi-ste
 
 Here are some examples of what this sounds like:
 
-##### Original Audio
+Original Audio
 <audio controls>
   <source src="{{ '/assets/audio/03-01-01-01-01-01-01_original.wav' | relative_url }}" type="audio/wav">
 </audio>
 
-##### Noise Audio
+Noise Audio
 <audio controls>
   <source src="{{ '/assets/audio/03-01-01-01-01-01-01_noise.wav' | relative_url }}" type="audio/wav">
 </audio>
 
-##### Pitch Changed Audio (+4)
+Pitch Changed Audio (+4)
 <audio controls>
   <source src="{{ '/assets/audio/03-01-01-01-01-01-01_pitch_up.wav' | relative_url }}" type="audio/wav">
 </audio>
 
-##### Pitch Changed Audio (-6)
+Pitch Changed Audio (-6)
 <audio controls>
   <source src="{{ '/assets/audio/03-01-01-01-01-01-01_pitch_down.wav' | relative_url }}" type="audio/wav">
 </audio>
@@ -469,6 +469,12 @@ https://librosa.org/doc/main/generated/librosa.feature.chroma_stft.html
 
 https://librosa.org/doc/main/generated/librosa.feature.spectral_contrast.html
 
+It might help to visualize what these features look like:
+
+![Visualizing the features](https://github.com/user-attachments/assets/e7960f14-a8f9-4c37-a3e6-83b59b183fe3)
+
+<br>
+
 **3.** Once we collect this data, we combine all the extracted features together and create a B-Spline feature space for this data. B-Splines, or Basis Splines, are piece-wise polynomial approximations of a curve. They are defined recursively as such [5]:
 $$
 B_{i, j}(x) = \frac{x - t_i}{t_{i+j} - t_i} B_{i, j-1}(x) + \frac{t_{i+j+1} - x}{t_{i+j+1} - t_{i+1}} B_{i+1, j-1}(x)
@@ -497,11 +503,27 @@ $$
 
 where $P_i$ are the control points.
 
+Here's what the basis functions look like for various orders:
+
+![basis-functions](https://github.com/user-attachments/assets/7abf7bd8-445f-4e7b-ae1c-800a2c196a51)
+
+<br>
+
+This is a heatmap of a basis matrix with an order of 4:
+
+![basis-function heatmap](https://github.com/user-attachments/assets/f981616d-200b-4f18-8d69-1fdbf1cd80d6)
+<br>
+
 **4.** Once we develop this feature space, we project the extracted feature space onto the B-Spline feature space, which effectively transforms the data into a lower dimensional approximation. For example, if we have $12$ knot, then no matter how many columns our data has, we would have knots + $2$, or $14$, columns.
+
+The B-Spline transformation reduces the dimensionality from the image earlier to this:
+
+![reduced-dimensionality](https://github.com/user-attachments/assets/d826733a-bf3b-4e32-8b8c-07364cc541a5)
+<br>
 
 **5.** Now, we just have to combine the data and save it disk.
 
-
+#### 
 
 ### References:
 [1] SpringerLink (Online service), Panigrahi, C. R., Pati, B., Mohapatra, P., Buyya, R., & Li, K. (2021). Progress in Advanced Computing and Intelligent Engineering: Proceedings of ICACIE 2019, Volume 1 (1st ed. 2021.). Springer Singapore : Imprint: Springer. https://doi.org/10.1007/978-981-15-6584-7
