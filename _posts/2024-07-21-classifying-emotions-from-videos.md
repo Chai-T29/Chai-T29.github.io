@@ -232,7 +232,7 @@ y_test = id_test[:, 2].astype(np.int8)
 
 
 ## Video Feature Extraction
-Now that we have our video data loaded, we need to extract relevant information from the videos. To do this, I implemented a customized function based on the popular histogram of oriented gradients algorithm, but in 3D! The image below shows an example of how the 2D approach works.
+Now that we have our video tensors, we need to extract relevant information from the videos. To do this, I implemented a customized function based on the popular Histogram of Oriented Gradients algorithm, but in 3D! The image below shows an example of how the 2D approach works.
 
 ![2D-HOG](https://github.com/user-attachments/assets/9e43d1b6-4b51-4bf5-a2b6-69f338c7e672)
 
