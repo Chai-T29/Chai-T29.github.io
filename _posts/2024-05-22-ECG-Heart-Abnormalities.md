@@ -120,7 +120,7 @@ $$
 
 where $P_i$ are the control points.
 
-Once we develop this feature space, we project the extracted feature space onto the B-Spline feature space, which effectively transforms the data into a lower dimensional approximation. For example, if we have $12$ knot, then no matter how many columns our data has, we would have knots + $2$, or $14$, columns.
+Once we develop this feature space, we project the extracted feature space onto the B-Spline feature space, which effectively transforms the data into a lower dimensional approximation. For example, if we have $12$ knots, then no matter how many columns our data has, we would have knots + $2$, or $14$, columns.
 
 #### Finding Optimal Knots Sequence
 
