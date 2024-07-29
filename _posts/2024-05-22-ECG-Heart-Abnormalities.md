@@ -13,7 +13,7 @@ ECG, or electrocardiogram, data measures the activity of the heart, and doctors 
 
 This project is an extension of a project I worked on in my High-Dimensional Data Analytics Class under Professor Kamran Paynabar [2], but I take it a step further for this project. This project covers tools and tricks that can improve classification tasks for ECG data to detect heart abnormalities, which is vital for early detection of heart diseases.
 
-ECG data is functional in nature and is considered to be a continuous function. In simpler terms, the number of data points for ECG data is dependent on how many times we sample the ECG signal, which can theoritically reach close to infinity! So, how do we represent this data in a machine-readable format that will not only be quick to compute, but more accurate as well? That's what this project aims to talk about! Here are the key objectives:
+ECG data is functional in nature and is considered to be a continuous function. In simpler terms, the number of data points for ECG data is dependent on how many times we sample the ECG signal, which can theoretically reach close to infinity! So, how do we represent this data in a machine-readable format that will not only be quick to compute, but more accurate as well? That's what this project aims to talk about! Here are the key objectives:
 
 -  How can we effectively reduce the dimensionality of ECG data?
 -  How do classification models perform on ECG data?
