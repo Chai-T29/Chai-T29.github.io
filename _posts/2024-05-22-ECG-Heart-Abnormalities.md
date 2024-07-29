@@ -7,13 +7,13 @@ feature_image: images/ecg.jpg
 tags: [machinelearning, healthcare]
 ---
 
-ECG, or electrocardiogram, data measures the activity of the heart, and doctors use this information to help diagnose a plethora of heart diseases. The purpose of this project is to develop a quick and scalable solution for early heart-disease detection. Automation in the healthcare industry can help alleviate some of the pressures caused by inefficient human resources. Although this project covers one use-case, this methodology can be applied across many aspects of healthcare analytics. I hope you enjoy this read!
+ECG, or electrocardiogram, data measures the activity of the heart, and doctors use this information to help diagnose a plethora of heart diseases. The purpose of this project is to develop a quick and scalable solution for early heart disease detection. Automation in the healthcare industry can help alleviate some of the pressures caused by inefficient human resources. Although this project covers one use case, this methodology can be applied across many aspects of healthcare analytics. I hope you enjoy this read!
 
 <!--more-->
 
-This project is an extension of a project I worked on in my High-Dimensional Data Analytics Class under Professor Kamran Paynabar [2], but I take it a step further for this project. This project covers tools and tricks that can improve classification tasks for ECG data to detect heart abnormalities, which is vital for early detection of heart diseases.
+This project is an extension of a project I worked on in my High-Dimensional Data Analytics Class under Professor Kamran Paynabar [2], but I take it a step further for this project. This project covers tools and tricks that can improve classification tasks for ECG data to detect heart abnormalities, which is vital for the early detection of heart diseases.
 
-ECG data is functional in nature and is considered to be a continuous function. In simpler terms, the number of data points for ECG data is dependent on how many times we sample the ECG signal, which can theoretically reach close to infinity! So, how do we represent this data in a machine-readable format that will not only be quick to compute, but more accurate as well? That's what this project aims to talk about! Here are the key objectives:
+ECG data is functional and is considered to be a continuous function. In simpler terms, the number of data points for ECG data is dependent on how many times we sample the ECG signal, which can theoretically reach close to infinity! So, how do we represent this data in a machine-readable format that will not only be quick to compute, but more accurate as well? That's what this project aims to talk about! Here are the key objectives:
 
 -  How can we effectively reduce the dimensionality of ECG data?
 -  How do classification models perform on ECG data?
@@ -230,7 +230,7 @@ plt.show()
 
 ![class2](https://github.com/user-attachments/assets/58fa11fa-d35b-41fc-902c-86ea5c7ffc84)
 
-We can see that most of the labels were predicted correctly as our model has shown earlier. I thought it would be cool to see it this as well!
+We can see that most of the labels were predicted correctly as our model has shown earlier. I thought it would be cool to see it like this as well!
 
 <br>
 
@@ -361,7 +361,7 @@ plt.show()
 
 #### Finding Optimal Number of Principal Components
 
-Using eigenvalue decomposition, we can find the optimal number of principal components. That is, the minimum number of principal components that explains a desired threshold variance. In our case, we use 0.99 as the threshold to maintain most of the information.
+Using eigenvalue decomposition, we can find the optimal number of principal components. That is the minimum number of principal components that explain a desired threshold variance. In our case, we use 0.99 as the threshold to maintain most of the information.
 
 <Details markdown="block">
 <summary>Click here to view the code</summary>
@@ -429,7 +429,7 @@ This method also performed extremely well, with an accuracy of $97.42$%! However
 
 ## Conclusion
 
-With this project, we have learned how to preprocess and reduce the dimensionality of ECG data with B-Splines and FPCA, as well as how to apply classification models to detect heart abnormalities using the reduced feature space. These skills are invaluable for developing effective models in medical diagnostics and other fields, especially when functional data is involved. In the near future, we will be seeing a lot more automation in the field of healthcare, which will improve patient outcomes, drive down costs, and improve medical accessibility across the world.
+With this project, we have learned how to preprocess and reduce the dimensionality of ECG data with B-Splines and FPCA, as well as how to apply classification models to detect heart abnormalities using the reduced feature space. These skills are invaluable for developing effective models in medical diagnostics and other fields, especially when functional data is involved. Soon, we will be seeing a lot more automation in the field of healthcare, which will improve patient outcomes, drive down costs, and improve medical accessibility across the world.
 
 If you've made it this far, I hope you enjoyed the read! Happy learning!
 
