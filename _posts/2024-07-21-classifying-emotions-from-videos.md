@@ -696,14 +696,12 @@ This image more clearly demonstrates the math:
 
 Source: https://www.researchgate.net/figure/Third-order-Tucker-decomposition_fig1_257482079
 
-<br>
-
-<Details markdown="block">
-<summary>Click here to view the code</summary>
-
 #### Implementing the algorithm
 
 Tensorly makes it super easy for use to implement Partial Tucker Decomposition, which is a customized form of the full Tucker, but it maintains the integrity of dimensions that aren't being reduced, like the number/order of samples. Once we reduce the video and audio data and flatten it, we can combine them together into our X_train and X_test for classification!
+
+<Details markdown="block">
+<summary>Click here to view the code</summary>
 
 ```python
 # Video Tucker Decomposition
