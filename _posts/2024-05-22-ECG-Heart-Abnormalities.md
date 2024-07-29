@@ -92,6 +92,7 @@ We can see clear separation in the chart above, but how do we classify signals l
 ## B-Splines Approach
 
 B-Splines, or Basis Splines, are piece-wise polynomial approximations of a curve. They are defined recursively as such [1][2]:
+
 $$
 B_{i, j}(x) = \frac{x - t_i}{t_{i+j} - t_i} B_{i, j-1}(x) \\ + \frac{t_{i+j+1} - x}{t_{i+j+1} - t_{i+1}} B_{i+1, j-1}(x)
 $$
