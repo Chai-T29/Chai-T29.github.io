@@ -1,23 +1,16 @@
 ---
 layout: post
-title: "Review: A Week With the Apple Watch"
-description: "The Apple Watch is a smartwatch developed by Apple Inc."
+title: "Understanding Customer Churn"
+description: "Customer churn is a core component of marketing analytics and marketing-focused data science."
 date: 2019-01-04
-feature_image: images/apple-watch.jpg
-tags: [tips, work]
+feature_image: images/churn.jpg
+tags: [marketing, analytics, machinelearning]
 ---
-The **Apple Watch** is a smartwatch developed by [Apple Inc](http://www.apple.com/). It incorporates fitness tracking and health-oriented capabilities as well as integration with iOS and other Apple products and services. The device is available in four variants: Apple Watch Sport, Apple Watch, Apple Watch Hermès, and Apple Watch Edition. The Watch is distinguished by different combinations of cases and first or third party interchangeable bands. Apple Watch relies on a wirelessly connected iPhone to perform many of its default functions such as calling and texting. It is compatible with the iPhone 5 or later models running iOS 8.2 or later, through the use of Bluetooth or Wi-Fi. 
+Customer churn is a core component of marketing analytics and marketing-focused data science. It shows whether a customer has exited, or stopped using, a product/service. This project showcases the efficacy of various binary classification models in predicting customer churn (1 for churned, and 0 for retained). The project initially covers the utilization of Principal Component Analysis for dimensionality reduction and Logistic Regression (both with gradient ascent and Newton's method). Additionally, we compare the efficacy of Decision Trees, Support Vector Machines, K-nearest neighbors, Random Forest, and Gradient Boosting models (from the sklearn library) based on training time and performance metrics. Did this spark your interest? Then let's dive right in!
 
 <!--more-->
 
-Announced by Tim Cook on September 9, 2014, the device was available for pre-order on April 10 and began shipping on April 24, 2015. The Apple Watch quickly became the best-selling wearable device, with the shipment of 4.2 million smartwatches in the second quarter of 2015, according to analyst firm Canalys.
-
->“You can only do so many things great, and you should cast aside everything else.”
-><cite>― Tim Cook</cite>
-
-Rumors surrounded an Apple-developed wearable back as far as 2011, which conceptualized the device as a variation of the iPod that would curve around the user's wrist, and feature Siri integration. On February 10, 2013, both The New York Times and The Wall Street Journal reported that Apple was beginning to develop an iOS-based smartwatch with a curved display. On February 12, 2013, Bloomberg reported that Apple's smartwatch project was "beyond the experimentation phase in its development", and had a team of at least 100 designers were working on the project. Further reports in March 2013 indicated that Apple planned to release the device by the end of the year. In July 2013, Financial Times reported that Apple had begun hiring more employees to work on the smartwatch, and that it was targeting a possible retail release in late 2014.
-
-## Unveiling & Release
+## Contents
 
 In April 2014, Apple CEO [Tim Cook](https://en.wikipedia.org/wiki/Tim_Cook) told The Wall Street Journal that the company was planning to launch new product categories that year, but did not reveal any specifics. In June 2014, Reuters reported that production was expected to begin in July for a release in October.
 
