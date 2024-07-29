@@ -7,12 +7,12 @@ feature_image: images/emotions.png
 tags: [computervision, machinelearning, research]
 ---
 
-Sentiment Analysis is widely used across industries to track how customers react to various stimuli. Now, with the rise of social media and advanced machine learning algorithms, we are able to analyze many different types of data to make informed decisions on business strategy. One such recent breakthrough is the use of video and audio data to classify human emotions, and this project covers a detailed approach in doing so without any complex neural networks. No matter how experienced you are, I'm sure that you will find this project very interesting!
+Sentiment Analysis is widely used across industries to track how customers react to various stimuli, like in social media algorithms. Now, with the rise of advanced machine learning algorithms, we are able to analyze many different types of data to make informed decisions on business strategy. One such recent breakthrough is the use of video and audio data to classify human emotions, and this project covers a detailed approach in doing so without any complex neural networks. No matter how experienced you are, I'm sure that you will find this project very interesting!
 <!--more-->
 
 ## Contents
 
-Here are the contents of this project. If you are here just for a casual read, then skip over to the second section.
+Here are the contents of this project. If you are here just for a casual read, then skip over to the [second section](#video-feature-extraction).
 1.  [Loading the Data](#loading-the-data)
 2.  [Video Feature Extraction](#video-feature-extraction)
 3.  [Audio Feature Extraction](#audio-feature-extraction)
@@ -21,7 +21,7 @@ Here are the contents of this project. If you are here just for a casual read, t
 6.  [References](#references)
 
 ## Loading the Data
-To start this project off, we need to download data from [Zenodo's website](https://zenodo.org/records/1188976). The data is called the Ryerson Audio-Visual Database of Emotional Speech and Song. For this project, we will only be focusing on the speech data. Here's the libraries you will need to start off:
+To start this project off, we need to download data from [Zenodo's website](https://zenodo.org/records/1188976). The dataset is called the Ryerson Audio-Visual Database of Emotional Speech and Song. For this project, we will only be focusing on the speech dataset. Here are the libraries you will need to start off:
 
 ```py
 import requests
@@ -41,7 +41,7 @@ import matplotlib.pyplot as plt
 
 #### Downloading the Data
 
-If you choose to get an api key from their website, you can use the code below to download the data to your computer. But, this data is extremely large, so unless your computer is capable of handling large data, I would not recommend you do this locally.
+If you choose to get an API key from their website, you can use the code below to download the dataset to your computer. But, the dataset is extremely large, so unless your computer is very powerful, I would not recommend you do this locally.
 
 <Details markdown="block">
 <summary>Click here to view the code</summary>
@@ -86,7 +86,7 @@ Once you download the data, you should have 1440 videos in a folder called Speec
 
 #### Processing Each Video
 
-Once we have the data downloaded and ready to go, we need to reduce the size of each frame and standardize the number of frames in each video to a desired number. This keeps our data compact and reduces the amount of redundancy in our data. For example, we can standardize the frame count to 50 so that every video only has 50 frames. This also makes our analysis easier because we can combine all the videos into one tensor.
+Once we have the dataset downloaded and ready to go, we need to reduce the size of each frame and standardize the number of frames in each video to a desired count. This keeps our data compact and reduces the amount of redundancy. For example, we can standardize the frame count to 50 so that every video only has 50 frames. This also makes our analysis easier because we can combine all the videos into training and testing tensor.
 
 <Details markdown="block">
 <summary>Click here to view the code</summary>
