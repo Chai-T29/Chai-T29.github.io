@@ -41,14 +41,14 @@ import matplotlib.pyplot as plt
 
 #### Downloading the Data
 
-If you choose to get an API key from their website, you can use the code below to download the dataset to your computer. But, the dataset is extremely large, so unless your computer is very powerful, I would not recommend you do this locally.
+If you choose to get an API key from [their website](https://zenodo.org/records/1188976), you can use the code below to download the dataset to your computer (you can download it manually as well). But, the dataset is extremely large, so unless your computer is very powerful, I would not recommend you do this locally.
 
 <Details markdown="block">
 <summary>Click here to view the code</summary>
     
 ```python
 record_id = '1188976'
-response = requests.get(f'https://zenodo.org/api/records/{record_id}', params={'access_token': ACCESS_TOKEN})
+response = requests.get(f'https://zenodo.org/api/records/{record_id}', params={'access_token': YOUR_API_KEY})
 data = response.json()
 
 all_files = data['files']
@@ -67,7 +67,7 @@ for file in tqdm(speech_files):
     file_name = os.path.join('Speech', file['key'])
 
     if not os.path.exists(file_name):
-        response = requests.get(file_url, params={'access_token': ACCESS_TOKEN})
+        response = requests.get(file_url, params={'access_token': YOUR_API_KEY})
         with open(file_name, 'wb') as f:
             f.write(response.content)
         print(f"Downloaded: {file_name}")
@@ -86,7 +86,7 @@ Once you download the data, you should have 1440 videos in a folder called Speec
 
 #### Processing Each Video
 
-Once we have the dataset downloaded and ready to go, we need to reduce the size of each frame and standardize the number of frames in each video to a desired count. This keeps our data compact and reduces the amount of redundancy. For example, we can standardize the frame count to 50 so that every video only has 50 frames. This also makes our analysis easier because we can combine all the videos into training and testing tensor.
+Once we have the dataset downloaded and ready to go, we need to reduce the size of each frame and standardize the number of frames in each video to a desired count. This keeps our data compact and reduces the amount of redundancy. For example, we can standardize the frame count to 50 so that every video only has 50 frames. This also makes our analysis easier because we can combine all the videos into training and testing tensors.
 
 <Details markdown="block">
 <summary>Click here to view the code</summary>
@@ -127,7 +127,7 @@ def interpolate_frames(frames, target_frame_count):
     
 #### Processing Each Zip File
 
-Using these two functions, we can now process each video, but we still need to create our training and testing tensors. To do this, we need to access data for each of the actors in the speech dataset. Each actor contains about 60 videos that are relevant to this project. We randomly split the videos into training and testing (40 training and 20 testing) for each actor, and merge the videos (and labels) into combined tensors. Once we have tensors for each zip file, we combine them together into our full training and testing datasets. Keep in mind, the training and testing tensors so far is only for the video data, so we will need other code for processing the audio data. 
+With the two functions defined earlier, we can now process each video, but we still need to create our training and testing tensors. To do this, we need every video for all actors in the speech dataset. Each actor contains about 60 videos that are relevant to this project. We randomly split the videos into training and testing (40 training and 20 testing) for each actor, and merge the videos (and labels) into combined tensors. Once we have tensors for each zip file, we combine them together into our full training and testing datasets. Keep in mind, the training and testing tensors so far are only for the video data, so we will need other code for processing the audio data.
 
 <Details markdown="block">
 <summary>Click here to view the code</summary>
