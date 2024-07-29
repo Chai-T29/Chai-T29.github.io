@@ -7,12 +7,12 @@ feature_image: images/emotions.png
 tags: [computervision, machinelearning, research]
 ---
 
-Sentiment Analysis is widely used across industries to track how customers react to various stimuli, like in social media algorithms. Now, with the rise of advanced machine learning algorithms, we are able to analyze many different types of data to make informed decisions on business strategy. One such recent breakthrough is the use of video and audio data to classify human emotions, and this project covers a detailed approach in doing so without any complex neural networks. No matter how experienced you are, I'm sure that you will find this project very interesting!
+Sentiment Analysis is widely used across industries to track how customers react to various stimuli, like in social media algorithms. With the rise of advanced machine learning algorithms, we can analyze many different types of data to make informed decisions on business strategy. One such recent breakthrough is the use of video and audio data to classify human emotions, and this project covers a detailed approach to doing so without any complex neural networks. No matter how experienced you are, I'm sure you will find this project very interesting!
 <!--more-->
 
 ## Contents
 
-Here are the contents of this project. If you are here just for a casual read, then skip over to the [second section](#video-feature-extraction).
+Here are the contents of this project. If you are here just for a casual read, then you can just go ahead and skip over to the [second section](#video-feature-extraction).
 1.  [Loading the Data](#loading-the-data)
 2.  [Video Feature Extraction](#video-feature-extraction)
 3.  [Audio Feature Extraction](#audio-feature-extraction)
@@ -21,9 +21,9 @@ Here are the contents of this project. If you are here just for a casual read, t
 6.  [References](#references)
 
 ## Loading the Data
-To start this project off, we need to download data from [Zenodo's website](https://zenodo.org/records/1188976). The dataset is called the Ryerson Audio-Visual Database of Emotional Speech and Song. For this project, we will only be focusing on the speech dataset. Here are the libraries you will need to start off:
+To start this project, we download data from [Zenodo's website](https://zenodo.org/records/1188976). The dataset is called the Ryerson Audio-Visual Database of Emotional Speech and Song. For this project, we will only be focusing on the speech dataset. Here are the libraries you will need to start:
 
-```py
+```python
 import requests
 import os
 from tqdm.notebook import tqdm
@@ -41,7 +41,7 @@ import matplotlib.pyplot as plt
 
 #### Downloading the Data
 
-If you choose to get an API key from [their website](https://zenodo.org/records/1188976), you can use the code below to download the dataset to your computer (you can download it manually as well). But, the dataset is extremely large, so unless your computer is very powerful, I would not recommend you do this locally.
+If you choose to get an API key from [their website](https://zenodo.org/records/1188976), you can use the code below to download the dataset to your computer (you can download it manually as well). But, the dataset is large, so unless your computer is powerful, I would not recommend you do this locally.
 
 <Details markdown="block">
 <summary>Click here to view the code</summary>
@@ -78,7 +78,7 @@ print("Download complete.")
 
 <br>
 
-Once you download the data, you should have 1440 videos in a folder called Speech. Here are some example frames from the videos:
+Once you download the data, you should have 1440 videos in a folder called 'Speech'. Here are some example frames from the videos:
 
 ![RAVDESS_Examples](https://github.com/user-attachments/assets/cd35df22-1211-4d2e-b98b-43d539f7e4f0)
 
@@ -86,7 +86,7 @@ Once you download the data, you should have 1440 videos in a folder called Speec
 
 #### Processing Each Video
 
-Once we have the dataset downloaded and ready to go, we need to reduce the size of each frame and standardize the number of frames in each video to a desired count. This keeps our data compact and reduces the amount of redundancy. For example, we can standardize the frame count to 50 so that every video only has 50 frames. This also makes our analysis easier because we can combine all the videos into training and testing tensors.
+Once we have the dataset downloaded and ready to go, we need to reduce the size of each frame and standardize the number of frames in each video to a desired count. This keeps our data compact and reduces redundancy. For example, we can standardize the frame count to 50 so that every video only has 50 frames. This makes our analysis easier because we can combine all the videos into training and testing tensors.
 
 <Details markdown="block">
 <summary>Click here to view the code</summary>
@@ -127,7 +127,7 @@ def interpolate_frames(frames, target_frame_count):
     
 #### Processing Each Zip File
 
-With the two functions defined earlier, we can now process each video, but we still need to create our training and testing tensors. To do this, we need every video for all actors in the speech dataset. Each actor contains about 60 videos that are relevant to this project. We randomly split the videos into training and testing (40 training and 20 testing) for each actor, and merge the videos (and labels) into combined tensors. Once we have tensors for each zip file, we combine them together into our full training and testing datasets. Keep in mind, the training and testing tensors so far are only for the video data, so we will need other code for processing the audio data.
+With the two functions defined earlier, we can now process each video, but we still need to create our training and testing tensors. To do this, we need every video for all actors in the speech dataset. Each actor contains about 60 videos that are relevant to this project. We randomly split the videos into training and testing (40 training and 20 testing) for each actor and merged the videos (and labels) into combined tensors. Once we have tensors for each zip file, we combine them into our full training and testing datasets. Keep in mind, that the training and testing tensors so far are only for the video data, so we will need other code for processing the audio data.
 
 <Details markdown="block">
 <summary>Click here to view the code</summary>
@@ -254,7 +254,7 @@ from tqdm.notebook import tqdm
 
 #### Breakdown of Custom 3D Histogram of Oriented Gradients for Dimensionality Reduction
 
-The formulation of this Histogram of Oriented Gradients algorithm is loosely based off of recent research in the field of computer vision. However, this project translates this approach for 3 dimensions. Below is an overview of the methodology that is applied to both training and testing datasets. If you are not too fond of math, you can skip to the [next section](#visualizing-gradient-magnitude-azimuthal-angle-and-polar-angle)!
+The formulation of this Histogram of Oriented Gradients algorithm is loosely based on recent research in the field of computer vision. However, this project translates this approach into 3 dimensions. Below is an overview of the methodology applied to the training and testing datasets. If you are not too fond of math, you can skip to the [next section](#visualizing-gradient-magnitude-azimuthal-angle-and-polar-angle)!
 
 **1.** Iterate through every sample and convert the frames to grayscale.
 
@@ -266,7 +266,7 @@ $$
 G = \sqrt{\left( \frac{\partial V}{\partial x}\right)^2 + \left( \frac{\partial V}{\partial y} \right)^2 + \left( \frac{\partial V}{\partial z}\right)^2}
 $$
 
-**4.** Generally for images ($I$), we compute the gradient direction by $\theta = \arctan \left( \frac{\frac{\partial I}{\partial y}}{\frac{\partial I}{\partial x}} \right)$ [[2]](#references). Since we have videos, we must compute the azimuthal angle and the polar angle to capture the 3D feature-space [[4]](#references).
+**4.** Generally for images ($I$), we compute the gradient direction by $\theta = \arctan \left( \frac{\frac{\partial I}{\partial y}}{\frac{\partial I}{\partial x}} \right)$ [[2]](#references). Since we have videos, we must compute the azimuthal angle and the polar angle to capture the 3D feature space [[4]](#references).
 
 $$
 \theta_{azimuth} = \arctan \left( \frac{\frac{\partial V}{\partial y}}{\frac{\partial V}{\partial x}} \right)
@@ -283,7 +283,7 @@ $$
 <br>
 
 
-#### Implemeting the Algorithm
+#### Implementing the Algorithm
 
 Now that we have a foundational understanding of the HOG3D algorithm, we can create our custom implementation. I use two main functions--one for calculating the shape of the new data, and one for implementing the HOG3D algorithm itself.
 
@@ -369,7 +369,7 @@ You might be wondering--what does all this crazy math look like if you were to v
 
 #### Creating our HOG3D Dataset
 
-Now that we have our algorithms set up, all we need to do is process each video, apply our dimensionality reduction algorithm, and combine these new datasets together.
+Now that we have our algorithms set up, we just need to process each video, apply our dimensionality reduction algorithm, and combine these new datasets.
 
 <Details markdown="block">
 <summary>Click here to view the code</summary>
@@ -401,7 +401,7 @@ H_test = process_videos(test_videos)
 
 ## Audio Feature Extraction
 
-Once we have our video data setup, all we need to do is extract some features for our audio data. Here are some libraries to get us started:
+Once we have our video data set up, we need to extract some features for our audio data. Here are some libraries to get us started:
 
 ```python
 import os
@@ -419,7 +419,7 @@ import gc
 ```
 
 #### Breakdown of Feature Engineering and Extraction Process
-The audio feature extraction process in the code below is a customized multi-step process, which is formulated as shown below.
+The audio feature extraction process in the code below is a customized multi-step process that is formulated as shown below.
 
 **1.** Process the audio files using Librosa and manipulate the audio by adding noise, changing the pitch, and changing the pitch of the audio to get multiple variations of the same audio sample.
 
@@ -448,9 +448,9 @@ Pitch Changed Audio (-6)
 <br>
 
 **2.** For each of the transformed audio files, we extract the following features using Librosa:
-  -  Mel-Frequency Cepstal Coefficients (MFCCs): A representation of the short-term power spectrum of a sound, based on a linear cosine transform of a log power spectrum on a nonlinear mel scale of frequency. [Source](https://librosa.org/doc/main/generated/librosa.feature.mfcc.html)
+  -  Mel-Frequency Cepstral Coefficients (MFCCs): A representation of the short-term power spectrum of a sound, based on a linear cosine transform of a log power spectrum on a nonlinear mel scale of frequency. [Source](https://librosa.org/doc/main/generated/librosa.feature.mfcc.html)
 
-  - Mel Spectogram: A spectrogram where the frequencies are converted to the mel scale, which approximates the human ear's response more closely than the linear frequency scale. [Source](https://librosa.org/doc/main/generated/librosa.feature.melspectrogram.html)
+  - Mel Spectogram: A spectrogram where the frequencies are converted to the Mel scale, which approximates the human ear's response more closely than the linear frequency scale. [Source](https://librosa.org/doc/main/generated/librosa.feature.melspectrogram.html)
 
   - Zero Crossing Rate (ZCR): The rate at which the audio signal changes sign from positive to negative or vice versa. It is a measure of the noisiness of the signal. [Source](https://librosa.org/doc/main/generated/librosa.feature.zero_crossing_rate.html)
 
@@ -466,7 +466,7 @@ It might help to visualize what these features look like:
 
 <br>
 
-**3.** Once we collect this data, we combine all the extracted features together and create a B-Spline feature space for this data. B-Splines, or Basis Splines, are piece-wise polynomial approximations of a curve. They are defined recursively as such [[5]](#references):
+**3.** Once we collect this data, we combine all the extracted features and create a B-Spline feature space for this data. B-splines, or Basis Splines, are piece-wise polynomial approximations of a curve. They are defined recursively as such [[5]](#references):
 
 $$
 B_{i, j}(x) = \frac{x - t_i}{t_{i+j} - t_i} B_{i, j-1}(x) \\ + \frac{t_{i+j+1} - x}{t_{i+j+1} - t_{i+1}} B_{i+1, j-1}(x)
@@ -506,14 +506,14 @@ This is a heatmap of a basis matrix with an order of 4:
 ![basis-function heatmap](https://github.com/user-attachments/assets/f981616d-200b-4f18-8d69-1fdbf1cd80d6)
 <br>
 
-**4.** Once we develop this feature space, we project the extracted feature space onto the B-Spline feature space, which effectively transforms the data into a lower dimensional approximation. For example, if we have $12$ knot, then no matter how many columns our data has, we would have knots + $2$, or $14$, columns.
+**4.** Once we develop this feature space, we project the extracted feature space onto the B-Spline feature space, which transforms the data into a lower dimensional approximation. For example, if we have $12$ knots, then no matter how many columns our data has, we would have knots + $2$, or $14$, columns.
 
 The B-Spline transformation reduces the dimensionality from the image earlier to this:
 
 ![reduced-dimensionality](https://github.com/user-attachments/assets/d826733a-bf3b-4e32-8b8c-07364cc541a5)
 <br>
 
-**5.** Now, we just have to combine the data and save it disk.
+**5.** Now, we just have to combine the data and save it to disk.
 
 #### Implementing the algorithm
 
@@ -751,7 +751,7 @@ print(X_test.shape)
 
 #### Training a Multilayer Perceptron Model using Sklearn
 
-We could simply train a Support Vector Classifier or Random Forest (and I do on my [Github](https://github.com/Chai-T29)), but I decided to use a simple neural network instead because a lot of the data is not linearly separable.
+We could just train a Support Vector Classifier or Random Forest (and I do on my [Github](https://github.com/Chai-T29)), but I decided to use a simple neural network instead because a lot of the data is not linearly separable.
 
 ```python
 mlp = MLPClassifier(alpha=0.07, batch_size=200, epsilon=1e-8, n_iter_no_change=10, learning_rate='adaptive', hidden_layer_sizes=(250, 500, 100), max_iter=1000, random_state=42)
@@ -759,19 +759,19 @@ mlp.fit(X_train, y_train)
 
 y_pred = mlp.predict(X_test)
 ```
-Using this model, we get an accuracy of $85.625$%! Considering that we did not use any complex deep learning architectures, this is pretty impressive! Here's a more detailed overview of the performance:
+Using this model, we get an accuracy of $85.625$%! Considering that we did not use any complex deep-learning architectures, this is pretty impressive! Here's a more detailed overview of the performance:
 
 ![performance](https://github.com/user-attachments/assets/0673d41a-b006-4420-9a91-6dcb5b949686)
 
-As we can see, most of the labels performed extremely well, especially disgust. This is most likely because disgust is a very strong emotion, which can be easier to pick up with our algorithm. However, sad and suprised emotions did not perform as well. These errors can easily be fixed with a more robust model, or more trial and error with the current model architecture.
+As we can see, most of the labels performed extremely well, especially disgust. This is most likely because disgust is a very strong emotion, which can be easier to pick up with our algorithm. However, sad and surprised emotions did not perform as well. These errors can easily be fixed with a more robust model or more trial and error with the current model architecture.
 
 <br>
 
 ## Conclusion
 
-This project showcases the potential of a custom approach to emotion classification using multimodal data. By combining a 3D Histograms of Oriented Gradients for video features and advanced audio feature extraction with B-Spline transformations, we were able to create a robust and efficient feature extraction pipeline. The integration of these features through Partial Tucker Decomposition significantly reduced the dimensionality, making our models more efficient without sacrificing performance. The impressive accuracy of our ensemble method underscores the power of combining video and audio data, paving the way for more sophisticated and accurate emotion detection systems in real-world applications. This custom approach not only enhances the accuracy of emotion classification but also demonstrates the potential for broader applications in any field requiring nuanced analysis of multimedia data.
+This project showcases the potential of a custom approach to emotion classification using multimodal data. By combining 3D Histograms of Oriented Gradients for video features and advanced audio feature extraction with B-Spline transformations, we were able to create a robust and efficient feature extraction pipeline. The integration of these features through Partial Tucker Decomposition significantly reduced the dimensionality, making our models more efficient without sacrificing performance. The impressive accuracy of our ensemble method underscores the power of combining video and audio data, paving the way for more sophisticated and accurate emotion detection systems in real-world applications. This custom approach not only enhances the accuracy of emotion classification but also demonstrates the potential for broader applications in any field requiring nuanced analysis of multimedia data.
 
-If you've made it this far, thank you for giving this a read and happy learning!
+If you've made it this far, thank you for giving this a read, and happy learning!
 
 <br>
 
