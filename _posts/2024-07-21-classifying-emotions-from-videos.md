@@ -258,7 +258,7 @@ The formulation of this Histogram of Oriented Gradients algorithm is loosely bas
 
 **1.** Iterate through every sample and convert the frames to grayscale.
 
-**2.** We then compute the gradients with respect to the height, width [1](#references), and frames ($\frac{\partial V}{\partial x}$, $\frac{\partial V}{\partial y}$, $\frac{\partial V}{\partial z}$).
+**2.** We then compute the gradients with respect to the height, width [[1]](#references), and frames ($\frac{\partial V}{\partial x}$, $\frac{\partial V}{\partial y}$, $\frac{\partial V}{\partial z}$).
 
 **3.** Using these gradients, we can compute the three-dimensional gradient magnitude for each video.
 
@@ -266,7 +266,7 @@ $$
 G = \sqrt{\left( \frac{\partial V}{\partial x}\right)^2 + \left( \frac{\partial V}{\partial y} \right)^2 + \left( \frac{\partial V}{\partial z}\right)^2}
 $$
 
-**4.** Generally for images ($I$), we compute the gradient direction by $\theta = \arctan \left( \frac{\frac{\partial I}{\partial y}}{\frac{\partial I}{\partial x}} \right)$ [2](#references). Since we have videos, we must compute the azimuthal angle and the polar angle to capture the 3D feature-space [4](#references).
+**4.** Generally for images ($I$), we compute the gradient direction by $\theta = \arctan \left( \frac{\frac{\partial I}{\partial y}}{\frac{\partial I}{\partial x}} \right)$ [[2]](#references). Since we have videos, we must compute the azimuthal angle and the polar angle to capture the 3D feature-space [[4]](#references).
 
 $$
 \theta_{azimuth} = \arctan \left( \frac{\frac{\partial V}{\partial y}}{\frac{\partial V}{\partial x}} \right)
@@ -276,7 +276,7 @@ $$
 \phi_{polar} = \arctan \left( \frac{\sqrt{\left( \frac{\partial V}{\partial x}\right)^2 + \left( \frac{\partial V}{\partial y} \right)^2}}{\frac{\partial V}{\partial z}} \right)
 $$
 
-**5.** With our three sets of features, we can now partition the video into cells [3](#references). In our case, the cell size is ($5$, $6$, $5$), which will group sets of 180 pixels together.
+**5.** With our three sets of features, we can now partition the video into cells [[3]](#references). In our case, the cell size is ($5$, $6$, $5$), which will group sets of 180 pixels together.
 
 **6.** With our grouped pixels, we cluster the gradient magnitudes of each pixel ($G_{(i, j, k)}$) into bins based on the azimuthal and polar angles. With $9$ bins, we sum the gradient magnitudes for all the pixels belonging to each bin for both types of angles, which reduces the dimensionality from $180$ points in each cell to $9 \times 2 = 18$ points per cell. We can then save these results to disk.
 
@@ -466,7 +466,7 @@ It might help to visualize what these features look like:
 
 <br>
 
-**3.** Once we collect this data, we combine all the extracted features together and create a B-Spline feature space for this data. B-Splines, or Basis Splines, are piece-wise polynomial approximations of a curve. They are defined recursively as such [5](#references):
+**3.** Once we collect this data, we combine all the extracted features together and create a B-Spline feature space for this data. B-Splines, or Basis Splines, are piece-wise polynomial approximations of a curve. They are defined recursively as such [[5]](#references):
 
 $$
 B_{i, j}(x) = \frac{x - t_i}{t_{i+j} - t_i} B_{i, j-1}(x) \\ + \frac{t_{i+j+1} - x}{t_{i+j+1} - t_{i+1}} B_{i+1, j-1}(x)
@@ -673,7 +673,7 @@ So, if we were to flatten out the data, we would have $48 * 71 * 10 * 9 * 2 = 61
 
 Below is a brief overview of how Tucker Decomposition works. Again, if you're not the biggest fan of math, you can skip to the [next section]().
 
-Given a tensor $\mathcal{X} \in \mathbb{R}^{I_1 \times I_2 \times \cdots \times I_N}$, Tucker decomposition approximates $\mathcal{X}$ as [6](#references):
+Given a tensor $\mathcal{X} \in \mathbb{R}^{I_1 \times I_2 \times \cdots \times I_N}$, Tucker decomposition approximates $\mathcal{X}$ as [[6]](#references):
 
 $$
 \mathcal{X} \approx \mathcal{G} \times_1 A^{(1)} \times_2 A^{(2)} \times_3 \cdots \times_N A^{(N)}
