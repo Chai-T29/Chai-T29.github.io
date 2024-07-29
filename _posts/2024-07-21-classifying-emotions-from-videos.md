@@ -254,8 +254,7 @@ from tqdm.notebook import tqdm
 
 #### Breakdown of Custom 3D Histogram of Oriented Gradients for Dimensionality Reduction
 
-The formulation of this Histogram of Oriented Gradients algorithm is loosely based off of recent research in the field of computer vision. However, this project translates this approach for 3 dimensions. Below is an overview of the methodology that is applied to both training and testing datasets. If you are not too fond of math, you can skip to the [next section](#visualizing-gradient-magnitude-azimuthal-angle-and-polar-angle)
-)!
+The formulation of this Histogram of Oriented Gradients algorithm is loosely based off of recent research in the field of computer vision. However, this project translates this approach for 3 dimensions. Below is an overview of the methodology that is applied to both training and testing datasets. If you are not too fond of math, you can skip to the [next section](#visualizing-gradient-magnitude-azimuthal-angle-and-polar-angle)!
 
 **1.** Iterate through every sample and convert the frames to grayscale.
 
