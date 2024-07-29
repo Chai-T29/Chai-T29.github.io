@@ -763,6 +763,8 @@ Using this model, we get an accuracy of $85.625$%! Considering that we did not u
 
 ![performance](https://github.com/user-attachments/assets/0673d41a-b006-4420-9a91-6dcb5b949686)
 
+As we can see, most of the labels performed extremely well, especially disgust. This is most likely because disgust is a very strong emotion, which can be easier to pick up with our algorithm. However, sad and suprised emotions did not perform as well. These errors can easily be fixed with a more robust model, or more trial and error with the current model architecture.
+
 <br>
 
 ## Conclusion
