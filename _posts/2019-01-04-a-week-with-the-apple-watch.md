@@ -201,7 +201,7 @@ display(X.head())
 
 ## PCA for Dimensionality Reduction
 
-Now that our data is fully ready, let's go over the math to reduce the dimensionality of the data [1]! If you're not a fan of math, feel free to skip to the [next section](#implementing-the-algorithm).
+Now that our data is fully ready, let's go over the math to reduce the dimensionality of the data [[1]](#references)! If you're not a fan of math, feel free to skip to the [next section](#implementing-the-algorithm).
 
 **1.** Decompose matrix  $\mathbf{X}$ :
 
@@ -228,7 +228,7 @@ Source: https://towardsdatascience.com/principal-component-analysis-pca-explaine
 
 #### Implementing the Algorithm
 
-Now that the math is out of the way, we can create an algorithm to implement this. I'll be splitting the algorithm into three main functions: finding the rank, decomposing/truncating the matrices, and computing the compression error [1]. Upon some trial and error, setting the error_rate to 0.1 was sufficient for the algorithm to find an optimal solution.
+Now that the math is out of the way, we can create an algorithm to implement this. I'll be splitting the algorithm into three main functions: finding the rank, decomposing/truncating the matrices, and computing the compression error [[1]](#references). Upon some trial and error, setting the error_rate to 0.1 was sufficient for the algorithm to find an optimal solution.
 
 <Details markdown="block">
 <summary>Click here to view the code</summary>
@@ -272,7 +272,7 @@ print(f'There are \033[1m{k}\033[0m relevant features at an error rate of \033[1
 ```
 </Details>
 
-The compression error is ~3.6% at an allowed error rate of 0.1. The optimal rank is 13, which means that we reduced the number of features by about 23%. This shows us that most of the data is independent and that it is most likely not heavily correlated. But we were still able to reduce the dimensionality with minimal loss.
+The compression error is ~3.6% at an allowed error rate of 0.1. The optimal rank is 13, which means that we reduced the number of features by about 23%. This shows us that most of the data is independent and that it is most likely not heavily correlated. However, we were still able to reduce the dimensionality with minimal loss.
 
 Now that we have our optimal rank, we can simply decompose the matrix and project the reduced feature space onto our data.
 
@@ -284,7 +284,43 @@ X_compressed.head()
 
 ## Logistic Regression
 
+With our reduced dataset, we can now start building models. Starting with logistic regression, I will be covering a gradient ascent approach with a learning decay function, and Newton's Method [[2]](#references).
 
+#### Gradient Ascent Approach
+
+Let's outline the algorithm we will be using for this method.
+
+For each iteration \( t \) from 0 to \( T-1 \):
+
+1. **Adjust Learning Rate**:
+   Update the learning rate \(\alpha_t\) using the decay rate:
+
+   $$ \alpha_t = \alpha \times \beta^t $$
+
+2. **Compute Gradient of Log-Likelihood**:
+   Calculate the gradient of the log-likelihood with respect to \(\theta\):
+
+   $$ \nabla \log L(\theta^{(t)}) = \mathbf{X}^T (\mathbf{y} - \sigma(\mathbf{X} \theta^{(t)})) $$
+
+3. **Update Theta**:
+   Perform a gradient ascent step to update \(\theta\):
+
+   $$ \theta^{(t+1)} = \theta^{(t)} + \alpha_t \nabla \log L(\theta^{(t)}) $$
+
+4. **Compute Log Loss**:
+   Calculate the logistic loss (negative log-likelihood):
+
+   $$ \text{log loss} = -\frac{1}{m} \sum_{i=1}^m \left[ y_i \log(p_i) + (1 - y_i) \log(1 - p_i) \right] $$
+
+where \( p_i = \sigma(\mathbf{X}_i \theta) \) and \( \sigma(z) \) is the sigmoid function:
+
+$$ \sigma(z) = \frac{1}{1 + e^{-z}} $$
+
+The optimal parameter vector \(\theta_{\text{optimal}}\) is obtained within \(T\) iterations:
+
+$$ \theta_{\text{optimal}} = \theta^{(T)} $$
+
+Here's the code for this algorithm
 
 ## Other Models
 
