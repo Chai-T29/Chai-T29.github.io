@@ -10,12 +10,12 @@ Customer churn is a core component of marketing analytics and marketing-focused 
 
 <!--more-->
 
-This project showcases the efficacy of various binary classification models in predicting customer churn (1 for churned, and 0 for retained). The project initially covers Principal Component Analysis (PCA) for dimensionality reduction and Logistic Regression (using gradient ascent and Newton's method). Additionally, we compare the efficacy of Decision Trees, Support Vector Machines, K-nearest neighbors, Random Forest, and Gradient Boosting models from the sklearn library based on training time and performance metrics.
+This project showcases the efficacy of logistic regression models in predicting customer churn (1 for churned, and 0 for retained). The project initially covers Principal Component Analysis (PCA) for dimensionality reduction and logistic regression (using gradient ascent and Newton's method).
 
 Here are the main questions this project aims to answer:
 
-1.  How effective are the Logistic Regression models at predicting customer churn?
-2.  What other models can we use and how do they perform compared to a simple Logistic Regression model?
+1.  How effective are the logistic regression models at predicting customer churn?
+2.  How can different approaches to logistic regression change the outcome of the results?
 3.  How well can we predict churn and what does that tell us about shaping business strategy?
 
 ## Contents
@@ -25,9 +25,8 @@ Here are the contents of this project:
 1.  [Understanding the Data](#understanding-the-data)
 2.  [PCA for Dimensionality Reduction](#pca-for-dimensionality-reduction)
 3.  [Logistic Regression](#logistic-regression)
-4.  [Other Models](#other-models)
-5.  [Observations and Results](#observations-and-results)
-6.  [References](#references)
+4.  [Observations and Results](#observations-and-results)
+5.  [References](#references)
 
 <br>
 
@@ -286,45 +285,188 @@ X_compressed.head()
 
 With our reduced dataset, we can now start building models. Starting with logistic regression, I will be covering a gradient ascent approach with a learning decay function, and Newton's Method [[2]](#references).
 
-#### Gradient Ascent Approach
+### Gradient Ascent Approach
+
+The gradient ascent algorithm is based on the first derivative, which generally takes a while to compute with a constant learning rate. However, with a decay function, the model converges at an optimum much faster.
 
 Let's outline the algorithm we will be using for this method.
 
-For each iteration \( t \) from 0 to \( T-1 \):
+For each iteration $t$ from 0 to $T-1$:
 
-1. **Adjust Learning Rate**:
-   Update the learning rate \(\alpha_t\) using the decay rate:
+**1.** Update the learning rate $\alpha_t$ using the decay rate:
 
    $$ \alpha_t = \alpha \times \beta^t $$
 
-2. **Compute Gradient of Log-Likelihood**:
-   Calculate the gradient of the log-likelihood with respect to \(\theta\):
+**2.** Calculate the gradient of the log-likelihood with respect to \(\theta\):
 
    $$ \nabla \log L(\theta^{(t)}) = \mathbf{X}^T (\mathbf{y} - \sigma(\mathbf{X} \theta^{(t)})) $$
 
-3. **Update Theta**:
-   Perform a gradient ascent step to update \(\theta\):
+**3.** Perform a gradient ascent step to update $\theta$:
 
    $$ \theta^{(t+1)} = \theta^{(t)} + \alpha_t \nabla \log L(\theta^{(t)}) $$
 
-4. **Compute Log Loss**:
-   Calculate the logistic loss (negative log-likelihood):
+**4.** Calculate the logistic loss (negative log-likelihood):
 
    $$ \text{log loss} = -\frac{1}{m} \sum_{i=1}^m \left[ y_i \log(p_i) + (1 - y_i) \log(1 - p_i) \right] $$
 
-where \( p_i = \sigma(\mathbf{X}_i \theta) \) and \( \sigma(z) \) is the sigmoid function:
+where $ p_i = \sigma(\mathbf{X}_i \theta) $ and $ \sigma(z) $ is the sigmoid function:
 
 $$ \sigma(z) = \frac{1}{1 + e^{-z}} $$
 
-The optimal parameter vector \(\theta_{\text{optimal}}\) is obtained within \(T\) iterations:
+The optimal parameter vector $\theta_{\text{optimal}}$ is obtained within $T$ iterations:
 
 $$ \theta_{\text{optimal}} = \theta^{(T)} $$
 
-Here's the code for this algorithm
+#### Training the Model
 
-## Other Models
+With the math out of the way, we can train the model.
+
+<Details markdown="block">
+<summary>Click here to view the code</summary>
+
+```python
+start = time.time()
+
+# Setting up our hyperparameters
+ALPHA = 0.05        # learning rate
+DECAY_RATE = 0.95   # incrementally reduces learning rate
+MAX_STEP = 100      # total no. of iterations
+
+# Get the data coordinate matrix, X, and label vector, y
+X_train = np.array(X_train)
+y_train = np.array(y_train)
+
+# Store guesses of theta, for subsequent analysis
+thetas = np.zeros((k, MAX_STEP+1))
+
+# Incrementally going up the gradient function to converge at an optimal theta
+losses_ga = []
+for t in range(MAX_STEP):
+    alpha_t = adjust_learning_rate(ALPHA, t, DECAY_RATE)
+    gradient = grad_log_likelihood(thetas[:,t:t+1], y_train, X_train)
+    s = alpha_t * gradient
+    thetas[:,t+1:t+2] = thetas[:,t:t+1] + s
+    losses_ga.append(compute_log_loss(thetas[:,t:t+1], X_train, y_train))
+
+# Storing optimal theta
+theta_ga = thetas[:, MAX_STEP:]
+
+end = time.time()
+training_time = end - start
+
+# Visualizing training loss
+plt.figure(figsize=(10, 6))
+plt.plot(losses_ga, label='Log-Loss', color='g')
+plt.xlabel('Iteration')
+plt.ylabel('Negative Log-Likelihood Loss')
+plt.title('Loss Over Iterations')
+plt.legend()
+plt.show()
+
+print(f"Training Time: {training_time:.3f} seconds")
+```
+</Details>
+
+Here's the training loss for this model:
+
+![ga_loss](https://github.com/user-attachments/assets/747e7c95-06f0-4a1d-8871-6b334d64f395)
+
+As you can see, the model converges at an optimal answer and fast! This model only took 0.344 seconds to train, with an accuracy of 84.6% on the training data. Here's the detailed performance of the model:
+
+![ga_results](https://github.com/user-attachments/assets/34a85e5c-1f6d-4b5a-b791-f2bbc2558500)
+
+<br>
+
+### Newton's Method
+
+Unlike the gradient ascent approach, which is based on the first derivative, Newton's Method involves the use of the Hessian matrix, which is the second derivative. In theory, this should be faster than a standard gradient ascent approach without a decay function, but will it be faster than the model from earlier with a decay? Let's find out!
+
+First, let's break down the math of what's going on.
+
+For each iteration $t$ from 0 to $T-1$:
+
+**1.** Calculate the Hessian matrix $ H(\theta^{(t)}) $:
+
+   $$ H(\theta^{(t)}) = -\mathbf{X}^T \text{diag}(\sigma(\mathbf{X} \theta^{(t)}) (1 - \sigma(\mathbf{X} \theta^{(t)}))) \mathbf{X} $$
+
+**2.** Calculate the gradient of the log-likelihood with respect to $\theta$:
+
+   $$ \nabla \log L(\theta^{(t)}) = \mathbf{X}^T (\mathbf{y} - \sigma(\mathbf{X} \theta^{(t)})) $$
+
+**3.** Solve for the Newton step $s$ by solving the linear system:
+
+   $$ H(\theta^{(t)}) s = -\nabla \log L(\theta^{(t)}) $$
+
+**4.** Perform a Newton step to update $\theta$:
+
+   $$ \theta^{(t+1)} = \theta^{(t)} + s $$
+
+**5.** Calculate the logistic loss (negative log-likelihood):
+
+   $$ \text{log loss} = -\frac{1}{m} \sum_{i=1}^m \left[ y_i \log(p_i) + (1 - y_i) \log(1 - p_i) \right] $$
+
+where $ p_i = \sigma(\mathbf{X}_i \theta) $ and $ \sigma(z) $ is the sigmoid function:
+
+$$ \sigma(z) = \frac{1}{1 + e^{-z}} $$
+
+The optimal parameter vector \(\theta_{\text{optimal}}\) is obtained after \(T\) iterations:
+
+$$ \theta_{\text{optimal}} = \theta^{(T)} $$
+
+#### Training the Model
+
+Let's assess how this new algorithm performs!
+
+<Details markdown="block">
+<summary>Click here to view the code</summary>
+  
+```python
+start = time.time()
+
+# Setting up our hyperparameters
+MAX_STEP = 55      # total no. of iterations
+
+k = X_train.shape[1]
+thetas_newt = np.zeros((k, MAX_STEP+1))
+losses_newt = []
+for t in range(MAX_STEP):
+    hessian = hess_log_likelihood(thetas_newt[:,t:t+1], X_train)
+    gradient = grad_log_likelihood(thetas_newt[:,t:t+1], y_train, X_train)
+    s = solve(hessian, -gradient)
+    thetas_newt[:,t+1:t+2] = thetas_newt[:,t:t+1] + s
+    losses_newt.append(compute_log_loss(thetas[:,t:t+1], X_train, y_train))
+theta_newt = thetas_newt[:, MAX_STEP:]
+
+end = time.time()
+training_time = end - start
+
+plt.figure(figsize=(10, 6))
+plt.plot(losses_newt, label='Log-Loss', color='g')
+plt.xlabel('Iteration')
+plt.ylabel('Negative Log-Likelihood Loss')
+plt.title('Loss Over Iterations')
+plt.legend()
+plt.show()
+
+print(f"Training Time: {training_time:.3f} seconds")
+```
+</Details>
+
+Here's the training loss for this model:
+
+![nm_loss](https://github.com/user-attachments/assets/7f4746d7-f929-45bb-b3ea-62dbde4d208f)
+
+The model trained in much fewer steps than the gradient ascent approach, but each step took significantly longer with the Hessian computation. Because of this, the model took 0.713 seconds to converge, which is nearly half the speed of the other model. The accuracy is also slightly lower at 84.16%, which is not a significant difference. Here's a more detailed overview of the performance:
+
+![nm_results](https://github.com/user-attachments/assets/40f56b32-dcd1-4c11-b7b0-8e55f1fefa27)
+
+<br>
 
 ## Observations and Results
+
+In conclusion, comparing the logistic regression models trained with gradient ascent and Newton’s method provides useful insights into predicting customer churn. The gradient ascent model converges faster and performs slightly better, though both models have a solid ROC AUC of 0.83. There’s room to reduce false negatives, which is important for keeping customers. Using better features or combining these models with other techniques could help. For the business, these results show that improving predictive models can help identify customers at risk of churning, leading to better retention strategies.
+
+<br>
 
 ## References
 
