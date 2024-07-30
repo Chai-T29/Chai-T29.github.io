@@ -4,7 +4,6 @@ title: "Classifying Emotions from Videos"
 description: "Sentiment Analysis is widely used across industries to track how customers react to various stimuli."
 date: 2024-07-21
 feature_image: images/emotions.png
-tags: [computervision, machinelearning, research]
 ---
 
 Sentiment Analysis is widely used across industries to track how customers react to various stimuli, like in social media algorithms. With the rise of advanced machine learning algorithms, we can analyze many different types of data to make informed decisions on business strategy. One such recent breakthrough is the use of video and audio data to classify human emotions, and this project covers a detailed approach to doing so without any complex neural networks. No matter how experienced you are, I'm sure you will find this project very interesting!
