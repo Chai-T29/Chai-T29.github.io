@@ -12,7 +12,7 @@ layout: default
         {% capture site_tags %}{% for tag in site.tags %}{{ tag | first }}{% unless forloop.last %},{% endunless %}{% endfor %}{% endcapture %}
         {% assign sortedTags = site_tags | split:',' | sort %}
         {% for tag in sortedTags %}
-        <span class="tag">{{ tag }}</span>{% unless forloop.last %} {% endunless %}
+        <a href="#{{ tag | cgi_escape }}">{{ tag }}</a>{% unless forloop.last %} {% endunless %}
         {% endfor %}
       </div><!-- .archive-tag-list -->
       {% for tag in sortedTags %}
@@ -27,11 +27,3 @@ layout: default
     </div><!-- .post-content -->
   </article><!-- .post -->
 </main><!-- .site-main -->
-
-<style>
-  .tag {
-    color: #007acc; /* Link color */
-    text-decoration: underline; /* Underline to mimic links */
-    cursor: default; /* Cursor as default to show it is not clickable */
-  }
-</style>
