@@ -58,6 +58,8 @@ Let's start our analysis by importing the necessary libraries for this project:
 import pandas as pd
 import numpy as np
 from numpy.linalg import svd
+from numpy.linalg import solve
+from scipy.special import expit as sigmoid
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, \
                             roc_curve, auc, precision_recall_curve, average_precision_score
@@ -199,9 +201,9 @@ display(X.head())
 
 ## PCA for Dimensionality Reduction
 
-Now that our data is fully ready, let's go over the math to reduce the dimensionality of the data.
+Now that our data is fully ready, let's go over the math to reduce the dimensionality of the data [1]! If you're not a fan of math, feel free to skip to the [next section](#implementing-the-algorithm).
 
-**1.** Decompose matrix  $X$ :
+**1.** Decompose matrix  $\mathbf{X}$ :
 
 $$ \mathbf{X} = \mathbf{U} \mathbf{\Sigma} \mathbf{V}^T $$
 
@@ -217,11 +219,72 @@ $$ \text{compression_error}(\mathbf{\Sigma}, k) = \frac{\sqrt{\sum_{i=k+1}^r \si
 
 $$ \text{compression_error}(\mathbf{\Sigma}, k) \leq \text{error_rate} $$
 
+<br>
+Here's a visualization of what principal components look like:
+
 ![PCA](https://github.com/user-attachments/assets/e090105e-b6e4-436a-9bb3-b8a6cdad3e00)
 
 Source: https://towardsdatascience.com/principal-component-analysis-pca-explained-visually-with-zero-math-1cbf392b9e7d
 
+#### Implementing the Algorithm
+
+Now that the math is out of the way, we can create an algorithm to implement this. I'll be splitting the algorithm into three main functions: finding the rank, decomposing/truncating the matrices, and computing the compression error [1]. Upon some trial and error, setting the error_rate to 0.1 was sufficient for the algorithm to find an optimal solution.
+
+<Details markdown="block">
+<summary>Click here to view the code</summary>
+
+```python
+def svd_decompose (X, k):
+    """Decomposes matrix with numpy.linalg.svd() and obtains top k dimensions for U, Sigma, and VT."""
+    
+    assert k > 0
+    Uk, Sk, VTk = svd(X, full_matrices=False)
+    
+    return (Uk[:,:k], Sk[:k], VTk[:k,:])
+
+def compression_error (Sigma, k):
+    """Computes the compression error of the svd_decompose() function."""
+    
+    return Sigma[k:].dot(Sigma[k:])**0.5 / Sigma.dot(Sigma)**0.5
+
+def find_rank (Sigma, error_rate=0.1):
+    """Finds rank based on Sigma and desired error rate."""
+    
+    for i in range(len(Sigma) - 1):
+        k = i + 1
+        error = compression_error(Sigma, k)
+        if error <= error_rate:
+            break
+            
+    print(f'\n\033[1mCompression Error\033[0m: {error}')
+    
+    return k
+
+# Getting the full SVD decomposition matrices without reduced dimensionality
+U, Sigma, VT = svd_decompose (X, X.shape[1])
+print('\n\033[1mShapes of SVD Matrices\033[0m:')
+print(U.shape, Sigma.shape, VT.shape)
+
+# Finding optimal rank (k) to use for our analysis
+error_rate = 0.1
+k = find_rank(Sigma, error_rate=error_rate)
+print(f'There are \033[1m{k}\033[0m relevant features at an error rate of \033[1m{error_rate}\033[0m.')
+```
+</Details>
+
+The compression error is ~3.6% at an allowed error rate of 0.1. The optimal rank is 13, which means that we reduced the number of features by about 23%. This shows us that most of the data is independent and that it is most likely not heavily correlated. But we were still able to reduce the dimensionality with minimal loss.
+
+Now that we have our optimal rank, we can simply decompose the matrix and project the reduced feature space onto our data.
+
+```python
+Uk, Sk, VTk = svd_decompose (X, k)
+X_compressed = X.dot(VTk.T)
+X_compressed.head()
+```
+
 ## Logistic Regression
+
+
 
 ## Other Models
 
