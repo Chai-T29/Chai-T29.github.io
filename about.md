@@ -6,7 +6,7 @@ feature_image: images/author.png
 permalink: /about/
 ---
 
-**Chaitanya Tatipigari** is an aspiring Data Scientist from Mountain View, California. After graduating from San Jose State University, he went to work on Google's G-Chips team as a Data Analytics Associate. Soon after, he got accepted into Georgia Tech's Master's in Analytics Program, where he specialized in Data Science.
+**Chaitanya Tatipigari** is an aspiring Data Scientist from Mountain View, California. After graduating from San Jose State University, he went to work on Google's G-Chips team as a Data Analytics Associate. Soon after, he got accepted into Georgia Tech's Master's in Analytics Program, where he is pursuing a specialization in Data Science.
 
 Since then, he has been building a portfolio of some amazing projects in the latest technologies. His curiosity and drive for innovation push him forward as he seeks new learning opportunities in the field of machine learning and data science.
 
