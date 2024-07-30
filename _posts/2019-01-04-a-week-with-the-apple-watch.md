@@ -50,6 +50,8 @@ The dataset was found on Kaggle at [this source](https://www.kaggle.com/datasets
 -  EstimatedSalary: The customer's estimated salary.
 -  Exited: The target variable, indicating whether the customer has churned (1) or not (0).
 
+#### Setting up our Analysis
+
 Let's start our analysis by importing the necessary libraries for this project:
 
 ```python
@@ -71,7 +73,7 @@ from math import e
 import time
 ```
 
-Now, let's import the data and try to understand what the data looks like under the hood.
+Now, let's import the data and try to understand what the data looks like under the hood. Here's a quick description
 
 ```python
 # Reading our data into a pandas dataframe
@@ -86,11 +88,138 @@ print(f'\nNumber of unique customers: {n_customers}')
 
 display(data.describe())
 ```
-![dataframe_head](https://github.com/user-attachments/assets/179f9bcb-dccf-4d5a-910d-88b0fdb22509)
 
-There are 10000 unique customers and 10000 data points, which means that each row of the dataset corresponds to exactly one customer. Although
+There are 10000 unique customers and 10000 data points, which means that each row of the dataset corresponds to exactly one customer. Let's dig into the data a little bit more!
+
+#### Exploratory Data Visualization
+
+Since our dataset contains both categorical and continuous variables, we need to identify which ones are what for creating appropriate visualizations.
+
+```python
+categorical_cols = ['Geography', 'Gender', 'NumOfProducts_Categorical', 'HasCrCard', 'IsActiveMember']
+continuous_cols = ['CreditScore', 'Age', 'Tenure', 'Balance', 'NumOfProducts', 'EstimatedSalary']
+```
+
+Now let's create some cool visualizations, starting with a pairplot!
+
+```python
+sns.pairplot(data[continuous_cols + categorical_cols + ['Churned']], hue='Churned', palette='Greens')
+plt.show()
+```
+
+![pairplot](https://github.com/user-attachments/assets/e63aa944-be74-46f1-b3e0-75be88c0f4f5)
+
+It is immediately apparent that there is a significant correlation between many of the independent variables. It should be noted that since the variables are plotted against each other, the matrix of plots has a diagonal of ones in a sense (because variables are perfectly correlated to themselves). If the plot was viewed as a triangular matrix, all of the relevant information would still be intact.
+
+Here are some histograms for the continuous data:
+
+<Details markdown="block">
+<summary>Click here to view the code</summary>
+
+```python
+fig, axs = plt.subplots(2, 3, figsize=(15, 10))
+for i, col in enumerate(continuous_cols):
+    ax = axs.flatten()[i]
+    sns.histplot(data[col], kde=True, ax=ax, color='g')
+    ax.set_title(f'Distribution of {col}')
+plt.tight_layout()
+```
+</Details>
+
+![histograms](https://github.com/user-attachments/assets/8a282d72-1f40-40fa-959a-aaa7c38ec092)
+
+The distributions of the CreditScore, Balance, and Age columns are relatively normal with right skew, outliers at 0, and left skewed, respectively. The distribution of NumOfProducts drops significantly in the two product ranges. The distributions of Tenure and EstimatedSalary are relatively constant throughout.
+
+Here are some countplots for the categorical data:
+
+<Details markdown="block">
+<summary>Click here to view the code</summary>
+
+```python
+fig, axs = plt.subplots(2, 3, figsize=(15, 10))
+for i, col in enumerate(categorical_cols):
+    ax = axs.flatten()[i]
+    sns.countplot(x=data[col], ax=ax, palette='Greens')
+    ax.set_title(f'Frequency of {col}')
+plt.tight_layout()
+```
+</Details>
+
+![countplots](https://github.com/user-attachments/assets/a43f91b8-c08d-4d3d-a9ae-5b27987e836f)
+
+The distributions of the categorical variables immediately show the differences between individual groups within the data. This is especially noticeable in the Geography, HasCrCard, and NumOfProduct_Categorical (same as the continuous version of this data) columns.
+
+We can also gain better insights into the continuous columns when we split the data by churn rate. I created boxplots below to visualize this:
+
+<Details markdown="block">
+<summary>Click here to view the code</summary>
+
+```python
+fig, axs = plt.subplots(2, 3, figsize=(15, 10))
+for i, col in enumerate(continuous_cols):
+    ax = axs.flatten()[i]
+    sns.boxplot(x='Churned', y=col, data=data, ax=ax, palette='Greens')
+    ax.set_title(f'Distribution of {col} by Churn Rate')
+plt.tight_layout()
+```
+</Details>
+
+![boxplots](https://github.com/user-attachments/assets/c68a2d41-06b1-4ebd-b10d-aa64857067d5)
+
+These plots showcase the distributions of the continuous variables across the Churned columns. Although some of the boxplots are nearly identical, there are slight variations in the distributions that the models should be able to learn from.
+
+#### Preprocessing Data
+
+Now that we have a better understanding of our dataset, we can start building our model, but the first step is to preprocess the data. This step includes creating dummy variables for the categorical columns and scaling the continuous columns to have a mean of 0 and a standard deviation of 1. This is because principal component analysis requires that the data is centered.
+
+<Details markdown="block">
+<summary>Click here to view the code</summary>
+
+```python
+# Splitting the data between X and y (independent and dependent variables)
+X = data.drop(columns=['RowNumber', 'CustomerId', 'Surname', 'Churned'], axis=1, inplace=False)
+y = data[['Churned']]
+
+print('\033[1mOriginal X data\033[0m:')
+display(X.head())
+print('\n\033[1my data\033[0m:')
+display(y.head())
+
+# Creating dummy columns for all of the non-binary categorical columns
+X = pd.get_dummies(X, columns=['Geography', 'Gender', 'NumOfProducts_Categorical'])
+
+# Scaling the data using sklearn's StandardScaler function (normalizes the data with mean of 0 and var of 1)
+scaler = StandardScaler()
+X[continuous_cols] = scaler.fit_transform(X[continuous_cols])
+
+print('\033[1mNormalized X data\033[0m:')
+display(X.head())
+```
+</Details>
 
 ## PCA for Dimensionality Reduction
+
+Now that our data is fully ready, let's go over the math to reduce the dimensionality of the data.
+
+**1.** Decompose matrix  $X$ :
+
+$$ \mathbf{X} = \mathbf{U} \mathbf{\Sigma} \mathbf{V}^T $$
+
+**2.** Truncate SVD by keeping the top $k$ dimensions:
+
+$$ \mathbf{X} \approx \mathbf{U}_k \mathbf{\Sigma}_k \mathbf{V}_k^T $$
+
+**3.** Compute compression error:
+
+$$ \text{compression_error}(\mathbf{\Sigma}, k) = \frac{\sqrt{\sum_{i=k+1}^r \sigma_i^2}}{\sqrt{\sum_{i=1}^r \sigma_i^2}} $$
+
+**4.** Find $k$ such that the error is minimized:
+
+$$ \text{compression_error}(\mathbf{\Sigma}, k) \leq \text{error_rate} $$
+
+![PCA](https://github.com/user-attachments/assets/e090105e-b6e4-436a-9bb3-b8a6cdad3e00)
+
+Source: https://towardsdatascience.com/principal-component-analysis-pca-explained-visually-with-zero-math-1cbf392b9e7d
 
 ## Logistic Regression
 
