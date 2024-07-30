@@ -409,7 +409,7 @@ where $ p_i = \sigma(\mathbf{X}_i \theta) $ and $ \sigma(z) $ is the sigmoid fun
 
 $$ \sigma(z) = \frac{1}{1 + e^{-z}} $$
 
-The optimal parameter vector \(\theta_{\text{optimal}}\) is obtained after \(T\) iterations:
+The optimal parameter vector $\theta_{\text{optimal}}$ is obtained after $T$ iterations:
 
 $$ \theta_{\text{optimal}} = \theta^{(T)} $$
 
