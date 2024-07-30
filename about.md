@@ -1,7 +1,6 @@
 ---
 layout: page
 title: About Me
-description: About 
 feature_image: images/author.png
 permalink: /about/
 ---
