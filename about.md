@@ -1,7 +1,7 @@
 ---
 layout: page
 title: About Me
-description: An optional about page for Scriptor Jekyll theme
+description: About 
 feature_image: images/author.png
 permalink: /about/
 ---
