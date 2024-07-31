@@ -2,8 +2,8 @@
 layout: post
 title: "Facial Recognition"
 description: "This project leverages the power of Higher-Order Discriminant Analysis (HODA) to classify celebrity photos."
-date: 2019-01-03
-feature_image: images/mountain.jpg
+date: 2024-06-19
+feature_image: images/facial_recognition.jpg
 tags: [tips, work]
 ---
 
