@@ -360,8 +360,6 @@ This visualization shows the results of the 5-fold cross-validation on the LSTM 
 
 ![5-fold](https://github.com/user-attachments/assets/fd699f97-3598-4b7b-8346-dc786df64898)
 
-# Average MAPE: 8.57%
-
 The MAPE has been reduced by approximately 18.34%, which highlights the effectiveness of employing cross-validation techniques on regression models. A MAPE of 8.57% after cross-validation signifies that the LSTM model’s predictions deviate from the actual values by an average of 8.57%. This relatively low error rate implies that the LSTM model is proficient at capturing the underlying dynamics of the time series data.
 
 The improved accuracy can offer valuable insights for investors, enabling them to make more informed decisions and better manage risk in the financial markets. By utilizing a cross-validated LSTM model, investors can gain a deeper understanding of the factors influencing price movements and identify potential trends or market anomalies. Consequently, this enhanced predictive capability can lead to more strategic investment planning and potentially higher returns.
