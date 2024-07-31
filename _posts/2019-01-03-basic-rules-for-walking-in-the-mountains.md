@@ -1,39 +1,205 @@
 ---
 layout: post
-title: "Basic Rules For Walking In The Mountains"
-description: "Hiking refers to walking outdoors on a trail, or off trail, for recreational purposes."
+title: "Facial Recognition"
+description: "This project leverages the power of Higher-Order Discriminant Analysis (HODA) to classify celebrity photos."
 date: 2019-01-03
 feature_image: images/mountain.jpg
 tags: [tips, work]
 ---
 
-In the *United States, Canada, the Republic of Ireland, and United Kingdom,* **hiking** refers to walking outdoors on a trail, or off trail, for recreational purposes. A day hike refers to a hike that can be completed in a single day. However, in the United Kingdom, the word walking is also used, as well as rambling, while walking in mountainous areas is called hillwalking. In Northern England, Including the Lake District and Yorkshire Dales, fellwalking describes hill or mountain walks, as fell is the common word for both features there.
+This project leverages the power of Higher-Order Discriminant Analysis (HODA) and Support Vector Machines (SVM) to classify celebrity photos. And yes, this project does not use any neural networks! Facial recognition technology has become a crucial tool in modern society due to its wide-ranging applications in security, healthcare, social media, and entertainment. By enabling machines to identify and verify individuals based on their facial features, it enhances security systems, simplifies user authentication processes, and offers personalized user experiences.
 
 <!--more-->
 
-Hiking can sometimes involves bushwhacking and hiking is sometimes referred to as such. This specifically refers to difficult walking through dense forest, undergrowth, or bushes, where forward progress requires pushing vegetation aside. In extreme cases of bushwhacking, where the vegetation is so dense that human passage is impeded, a machete is used to clear a pathway. The Australian term bushwalking refers to both on and off-trail hiking. Common terms for hiking used by [New Zealanders](https://en.wikipedia.org/wiki/New_Zealand) are tramping (particularly for overnight and longer trips), walking or bushwalking. Trekking is the preferred word used to describe multi-day hiking in the mountainous regions of India, Pakistan, Nepal, North America, South America, Iran and in the highlands of East Africa. Hiking a long-distance trail from end-to-end is also referred to as trekking and as thru-hiking in some places. In North America, multi-day hikes, usually with camping, are referred to as [backpacking](https://en.wikipedia.org/wiki/Backpacking_(wilderness)).
+The growing importance of facial recognition technology underscores the need for advanced algorithms that can accurately and efficiently process high-dimensional image data. HODA is a supervised feature extraction algorithm, and this notebook implements the algorithm as outlined in “Tensor Decompositions for Feature Extraction and Classification of High Dimensional Datasets” by Anh Huy Phan and Andrzej Cichocki [[1]](#references).
 
-## Long Distance Hiking
+## Contents
 
-Frequently nowadays long distance hikes (walking tours) are undertaken along long distance paths, including the National Trails in England and Wales, the National Trail System in the USA and The Grande Randonnée (France), Grote Routepaden, or Lange-afstand-wandelpaden (Holland), Grande Rota (Portugal), Gran Recorrido (Spain) is a network of long-distance footpaths in Europe, mostly in France, Belgium, the Netherlands and Spain. There are extensive networks in other European countries of long distance trails, as well as in Canada, Australia, New Zealand, Nepal, and to a lesser extent other Asiatic countries, like Turkey, Israel, and Jordan. In the Alps of Austria, Slovenia, Switzerland, Germany, France, and Italy walking tours are often made from 'hut-to-hut', using an extensive system of mountain huts.
+Here are the main sections of this article:
 
-{% include image_full.html imageurl="/images/mountain-2.jpg" title="Mountain" caption="Norway is Beautiful" %}
+1. [Loading the Data](#loading-the-data)
+2. [Feature Extraction using HODA](#feature-extraction-using-hoda)
+3. [Fitting the Model](#fitting-the-model)
+4. [Conclusion](#conclusion)
+5. [References](#references)
 
-In the late 20th-century there has been a proliferation of official and unofficial long distance routes, which mean that hikers now are more likely to refer to using a long distance way (Britain), trail (USA), The Grande Randonnée (France), etc., than setting out on a walking tour. Early examples of long distance paths, include the Appalachian Trail in the USA and the Pennine Way in Britain. Pilgrimage routes are now treated, by some walkers, as long distance routes, and the route taken by the British National Trail the North Downs Way closely follows that of the Pilgrims' Way to Canterbury.
+<br>
 
-*Hiking times can be estimated by Naismith's rule or Tobler's hiking function.*
+## Loading the Data
+The dataset was found on Kaggle and is called the [Hollywood Celebrity Facial Recognition Dataset](https://www.kaggle.com/datasets/bhaveshmittal/celebrity-face-recognition-dataset). There are 17 actors and 100 photos per actor that are relevant to us. Scarlett Johanson has 200 photos because she's just that awesome! However, we will only be using 100 to standardize the model training.
 
-## Equipment
+Before we start, we need to set up some libraries for our analysis.
 
-The equipment required for hiking depends on the length of the hike, but day hikers generally carry at least water, food, a map, and rain-proof gear. Hikers usually wear sturdy hiking boots for mountain walking and backpacking, as protection from the rough terrain, as well as providing increased stability. The Mountaineers club recommends a list of "Ten Essentials" equipment for hiking, including a compass, sunglasses, sunscreen, a flashlight, a first aid kit, a fire starter, and a knife. Other groups recommend items such as hat, gloves, insect repellent, and an emergency blanket. A GPS navigation device can also be helpful and route cards may be used as a guide.
+```python
+import numpy as np
+import pandas as pd
+import zipfile
+import io
+import matplotlib.pyplot as plt
+from scipy.ndimage import zoom
+import seaborn as sns
+%matplotlib inline
+import tensorly as tl
+from tensorly.tenalg import multi_mode_dot
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from collections import defaultdict
+from tqdm.notebook import tqdm
+```
 
->“Returning home is the most difficult part of long-distance hiking; You have grown outside the puzzle and your piece no longer fits.”
-><cite>― Cindy Ross</cite>
+Once we have our libraries set up, we can run the code below to create our training and testing tensors with dimensions as height x width x samples, and labels for each sample. The data processing ensures that all of the photos are the same size and then converts them to grayscale. We could leave RGB on, but it doesn't add much information for our analysis and it takes three times longer to compute.
 
-Proponents of ultralight backpacking argue that long lists of required items for multi-day hikes increases pack weight, and hence fatigue and the chance of injury. Instead, they recommend reducing pack weight, in order to make hiking long distances easier. Even the use of hiking boots on long-distances hikes is controversial among ultralight hikers, because of their weight.
+<Details markdown="block">
+<summary>Click here to view the code</summary>
 
-## Environmental Impact
+```python
+target_shape = (240, 240)
 
-Natural environments are often fragile, and may be accidentally damaged, especially when a large number of hikers are involved. For example, years of gathering wood can strip an alpine area of valuable nutrients. and some species, such as martens or bighorn sheep, are very sensitive to the presence of humans, especially around mating season. Generally, protected areas such as parks have regulations in place to protect the environment, so as to minimize such impact. Such regulations include banning wood fires, restricting camping to established camp sites, disposing or packing out faecal matter, and imposing a quota on the number of hikers. Many hikers espouse the philosophy of Leave No Trace, following strict practices on dealing with food waste, food packaging, and other impact on the environment.
+X = []
+y = []
 
-Human waste is often a major source of environmental impact from hiking, and can contaminate the watershed and make other hikers ill. 'Catholes' dug 10 to 25 cm (4 to 10 inches) deep, depending on local soil composition and covered after use, at least 60 m (200 feet) away from water sources and trails, are recommended to reduce the risk of bacterial contamination. [ [Source](https://en.wikipedia.org/wiki/Hiking) ]
+zip_path = 'archive.zip'
+i = 0
+with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+    try:
+        for file in zip_ref.infolist():
+            folder_name = file.filename.split('/')[0]
+            y.append(folder_name)
+            with zip_ref.open(file.filename) as image_file:
+                img = plt.imread(io.BytesIO(image_file.read()), format='jpeg')
+                
+                if img.shape[:2] != target_shape:
+                    factors = (target_shape[0] / img.shape[0], target_shape[1] / img.shape[1], 1)
+                    img = zoom(img, factors, order=3)
+                    
+                gray_img = (img@np.array([0.2989, 0.5870, 0.1140])).astype(np.float32)
+                X.append(gray_img)
+    
+            i += 1
+    except Exception as e:
+        print(f'Error on iteration {i}')
+
+X = np.array(X).transpose(1, 2, 0)
+y = np.array(y)
+
+label_indices = defaultdict(list)
+for index, label in enumerate(y):
+    label_indices[label].append(index)
+
+train_indices = []
+test_indices = []
+
+for label, indices in label_indices.items():
+    np.random.shuffle(indices)
+    train_indices.extend(indices[:97])
+    test_indices.extend(indices[97:100])
+
+X_train, X_test = X[..., train_indices], X[..., test_indices]
+y_train, y_test = y[train_indices], y[test_indices]
+
+print("Training data shape:", X_train.shape, y_train.shape)
+print("Testing data shape:", X_test.shape, y_test.shape)
+```
+</Details>
+
+Now that we have our data set up, let's look at some examples of the photos.
+
+<Details markdown="block">
+<summary>Click here to view the code</summary>
+
+```python
+indices = np.random.choice(X_train.shape[2], 25, replace=False)
+
+fig, axes = plt.subplots(5, 5, sharex=True, sharey=True, figsize=(10, 10))
+for i, ax in enumerate(axes.flat):
+    ax.imshow(X_train[..., indices[i]], cmap='gray')
+    ax.set_title(y_train[indices[i]])
+
+fig.suptitle('25 Randomly Sampled Images from the Dataset')
+plt.tight_layout()
+plt.show()
+```
+</Details>
+
+![download](https://github.com/user-attachments/assets/bea1c1cf-5f81-4f95-96d8-c8a421f510fa)
+
+We can see that not all photos are standardized, and there are many inconsistencies in age, facial accessories, angles, and more. Let's find out how much this will affect our analysis!
+
+<br>
+
+## Feature Extraction using HODA
+
+As mentioned earlier, this feature extraction method is based off of the paper, “Tensor Decompositions for Feature Extraction and Classification of High Dimensional Datasets” by Anh Huy Phan and Andrzej Cichocki [[1]](#references), and it is an iterative process. If you are not the biggest fan of math, you can skip over this section!
+
+The HODA algorithm is formulated as such:
+
+$$
+\underline{\tilde{\mathbf{X}}}^{(k)} = \underline{\mathbf{X}}^{(k)} - \underline{\tilde{\mathbf{X}}}^{(c_k)}
+$$
+
+$$
+\underline{\tilde{\mathbf{X}}}^{(c)} = \sqrt{K_c} \left( \underline{\tilde{\mathbf{X}}}^{(c)} - \underline{\tilde{\mathbf{X}}} \right)
+$$
+
+**input** : $\underline{\mathbf{X}}$: Concatenated tensor of $K$ training samples $I_1 \times I_2 \times \cdots \times I_N \times K$  
+**output** : $\mathbf{U}^{(n)}$: $N$ orthogonal basis factors $I_n \times J_n \ (n = 1, 2, \ldots, N)$  
+**output** : $\mathbf{G}$: Training feature tensors $J_1 \times J_2 \times \cdots \times J_N \times K$  
+
+**begin**
+
+- Initialize $\mathbf{U}^{(n)}$
+    
+- Calculate $\underline{\tilde{\mathbf{X}}}$ and $\underline{\tilde{\mathbf{X}}}^{(c)}$ as outlined above.
+
+    **repeat**
+        **for** $n = 1$ to $N$ **do**
+  
+$$\tilde{\mathbf{Z}}_n = \underline{\tilde{\mathbf{X}}} \times_{\{(n,N+1)\}} \{ \mathbf{U}^{(T)} \}$$
+
+$$\mathbf{S}_w^n = \tilde{\mathbf{Z}}_n \tilde{\mathbf{Z}}_n^{(T)}$$
+
+$$\tilde{\mathbf{Z}}_n^b = \underline{\tilde{\mathbf{X}}}^{(c)} \times_{\{(n,N+1)\}} \{ \mathbf{U}^{(T)} \}$$
+
+$$\mathbf{S}_b^n = \tilde{\mathbf{Z}}_n^b \tilde{\mathbf{Z}}_n^{b(T)}$$
+
+$$
+\varphi = \frac{\text{trace}(\mathbf{U}^{(n)T} \mathbf{S}_b^n \mathbf{U}^{(n)})}{\text{trace}(\mathbf{U}^{(n)T} \mathbf{S}_w^n \mathbf{U}^{(n)})}
+$$
+
+$$
+\left[ \mathbf{U}^{(n)}, \Lambda \right] = \text{eigs}(\mathbf{S}_b^n - \varphi \mathbf{S}_w^n, J_n, 'LM')
+$$
+
+$$
+or /> [\mathbf{U}^{(n)}, \Lambda] = \text{eigs}(\mathbf{S}_b^n, \mathbf{S}_w^n, J_n, 'LM')
+$$
+
+$$
+\left[ \mathbf{U}^{(n)}, \Lambda \right] = \text{eigs}(\mathbf{U}^{(n)} \mathbf{U}^{(n)T} \mathbf{X}_{\underline{-n}} \mathbf{X}_{\underline{-n}}^T \mathbf{U}^{(n)} \mathbf{U}^{(n)T}, J_n, 'LM')
+$$
+
+- **until** a criterion is met
+
+- $\mathbf{G} = \mathbf{X}_{\underline{-}(N+1)} \left[ \mathbf{U} \right]^T$
+
+**end**
+
+<Details markdown="block">
+<summary>Click here to view the code</summary>
+
+```python
+```
+</Details>
+
+## Fitting the Model
+<Details markdown="block">
+<summary>Click here to view the code</summary>
+
+```python
+```
+</Details>
+
+## Conclusion
+
+## References
+
+[1] Anh Huy Phan, Andrzej Cichocki, Tensor decompositions for feature extraction and classification of high dimensional datasets, Nonlinear Theory and Its Applications, IEICE, 2010, Volume 1, Issue 1, Pages 37-68, Released on J-STAGE October 01, 2010, Online ISSN 2185-4106, https://doi.org/10.1587/nolta.1.37, https://www.jstage.jst.go.jp/article/nolta/1/1/1_1_37/_article/-char/en
