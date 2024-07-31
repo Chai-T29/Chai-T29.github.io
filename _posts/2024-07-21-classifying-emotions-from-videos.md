@@ -7,11 +7,12 @@ feature_image: images/emotions.png
 ---
 
 Sentiment Analysis is widely used across industries to track how customers react to various stimuli, like in social media algorithms. With the rise of advanced machine learning algorithms, we can analyze many different types of data to make informed decisions on business strategy. One such recent breakthrough is the use of video and audio data to classify human emotions, and this project covers a detailed approach to doing so without any complex neural networks. No matter how experienced you are, I'm sure you will find this project very interesting!
+
 <!--more-->
 
 This project addresses the complex challenge of emotion classification using audio and video data, leveraging the Ryerson Audio-Visual Database of Emotional Speech and Song (RAVDESS). By developing a robust model to accurately classify emotions based on speech, this project has significant implications across multiple fields. In mental health, it can aid in early diagnosis and treatment of emotional disorders by providing therapists with deeper insights into patients’ emotional states. In customer service, automated emotion recognition can enhance user experience by enabling more empathetic and responsive interactions. Moreover, in human-computer interaction, it can lead to the development of more intuitive and emotionally aware systems, enhancing user engagement and satisfaction.
 
-<nr>
+<br>
 
 ## Contents
 
