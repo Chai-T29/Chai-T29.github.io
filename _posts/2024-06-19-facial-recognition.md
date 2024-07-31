@@ -4,7 +4,6 @@ title: "Facial Recognition"
 description: "This project leverages the power of Higher-Order Discriminant Analysis (HODA) to classify celebrity photos."
 date: 2024-06-19
 feature_image: images/facial_recognition.jpg
-tags: [tips, work]
 ---
 
 This project leverages the power of Higher-Order Discriminant Analysis (HODA) and Support Vector Machines (SVM) to classify celebrity photos. And yes, this project does not use any neural networks! Facial recognition technology has become a crucial tool in modern society due to its wide-ranging applications in security, healthcare, social media, and entertainment. By enabling machines to identify and verify individuals based on their facial features, it enhances security systems, simplifies user authentication processes, and offers personalized user experiences.
