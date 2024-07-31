@@ -364,7 +364,7 @@ def compute_hog3d_rgb(frames, cell_size, nbins, v, gaussian_filter):
 
 You might be wondering--what does all this crazy math look like if you were to visualize it? Well, this is what it would look like:
 
-<iframe src="https://www.youtube.com/embed/Vm-0o4YNdD4?autoplay=1&loop=1&playlist=Vm-0o4YNdD4" width="1500" height="700" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+<iframe src="https://www.youtube.com/embed/Vm-0o4YNdD4?rel=0?autoplay=1&loop=1&playlist=Vm-0o4YNdD4" width="1500" height="700" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 
 #### Creating our HOG3D Dataset
 
