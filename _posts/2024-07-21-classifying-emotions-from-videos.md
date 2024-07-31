@@ -9,6 +9,10 @@ feature_image: images/emotions.png
 Sentiment Analysis is widely used across industries to track how customers react to various stimuli, like in social media algorithms. With the rise of advanced machine learning algorithms, we can analyze many different types of data to make informed decisions on business strategy. One such recent breakthrough is the use of video and audio data to classify human emotions, and this project covers a detailed approach to doing so without any complex neural networks. No matter how experienced you are, I'm sure you will find this project very interesting!
 <!--more-->
 
+This project addresses the complex challenge of emotion classification using audio and video data, leveraging the Ryerson Audio-Visual Database of Emotional Speech and Song (RAVDESS). By developing a robust model to accurately classify emotions based on speech, this project has significant implications across multiple fields. In mental health, it can aid in early diagnosis and treatment of emotional disorders by providing therapists with deeper insights into patients’ emotional states. In customer service, automated emotion recognition can enhance user experience by enabling more empathetic and responsive interactions. Moreover, in human-computer interaction, it can lead to the development of more intuitive and emotionally aware systems, enhancing user engagement and satisfaction.
+
+<nr>
+
 ## Contents
 
 Here are the contents of this project. If you are here just for a casual read, then you can just go ahead and skip over to the [second section](#video-feature-extraction).
@@ -20,7 +24,7 @@ Here are the contents of this project. If you are here just for a casual read, t
 6.  [References](#references)
 
 ## Loading the Data
-To start this project, we download data from [Zenodo's website](https://zenodo.org/records/1188976). The dataset is called the Ryerson Audio-Visual Database of Emotional Speech and Song. For this project, we will only be focusing on the speech dataset. Here are the libraries you will need to start:
+To start this project, we download data from [Zenodo's website](https://zenodo.org/records/1188976). For this project, we will only be focusing on the speech dataset. Here are the libraries you will need to start:
 
 ```python
 import requests
@@ -769,6 +773,8 @@ As we can see, most of the labels performed extremely well, especially disgust. 
 ## Conclusion
 
 This project showcases the potential of a custom approach to emotion classification using multimodal data. By combining 3D Histograms of Oriented Gradients for video features and advanced audio feature extraction with B-Spline transformations, we were able to create a robust and efficient feature extraction pipeline. The integration of these features through Partial Tucker Decomposition significantly reduced the dimensionality, making our models more efficient without sacrificing performance. The impressive accuracy of our ensemble method underscores the power of combining video and audio data, paving the way for more sophisticated and accurate emotion detection systems in real-world applications. This custom approach not only enhances the accuracy of emotion classification but also demonstrates the potential for broader applications in any field requiring nuanced analysis of multimedia data.
+
+The importance of this project extends beyond its technical achievements, as it lays the groundwork for practical applications that can profoundly impact various domains. By improving emotion classification accuracy, we can develop tools that better understand and respond to human emotions, ultimately enhancing communication and interaction in both personal and professional settings. The integration of advanced machine learning techniques in this project demonstrates the potential to create more empathetic and intelligent systems, underscoring the transformative power of technology in understanding and interpreting human emotions.
 
 If you've made it this far, thank you for giving this a read, and happy learning!
 
