@@ -128,7 +128,7 @@ We can see that not all photos are standardized, and there are many inconsistenc
 
 ## Feature Extraction using HODA
 
-As mentioned earlier, this feature extraction method is based off of the paper, “Tensor Decompositions for Feature Extraction and Classification of High Dimensional Datasets” by Anh Huy Phan and Andrzej Cichocki [[1]](#references), and it is an iterative process. If you are not the biggest fan of math, you can skip over this section!
+As mentioned earlier, this feature extraction method is based off of the paper, “Tensor Decompositions for Feature Extraction and Classification of High Dimensional Datasets” by Anh Huy Phan and Andrzej Cichocki [[1]](#references), and it is an iterative process. If you are not the biggest fan of math, you can skip over to the [next section](#implementing-the-hoda-algorithm)!
 
 The HODA algorithm is formulated as such:
 
@@ -183,22 +183,115 @@ $$
 
 **end**
 
+The output of the model is similar to Tucker Decomposition, but it is a supervised approach to it. So, understanding Tucker Decomposition can help get an idea of what's going on under the hood. The diagram below explains it more clearly.
+
+![Third-order-Tucker-decomposition](https://github.com/user-attachments/assets/235fa466-0aaf-49df-95a8-876c40171dd5)
+
+Source: https://www.researchgate.net/figure/Third-order-Tucker-decomposition_fig1_257482079
+
+In our case, the factor matrices, when multiplied by the original tensor across each axis, will generate a lower dimensional representation of the images. And so, our algorithm must return these factor matrices.
+
+#### Implementing the HODA Algorithm
+
+With all the math out of the way, we can implement our algorithm! The function in the code below returns the factor matrices that need to be multiplied across specific modes, as mentioned earlier. We compute the HODA algorithm on our training data, get the factor matrices, and multiply them across each axis for both training and testing tensors.
+
 <Details markdown="block">
 <summary>Click here to view the code</summary>
 
 ```python
+def HODA(X_train, y_train, new_dims, alpha=1.0):
+    I, K = X_train.shape[:-1], X_train.shape[-1]
+    training_samples = K // len(np.unique(y_train))
+
+    X_c = np.zeros_like(X_train).astype(np.float32)
+    for lab in np.unique(y_train)[1:]:
+        X_c[..., y_train == lab] = np.mean(X_train[..., y_train == lab].astype(np.float32), axis=-1, keepdims=True)
+
+    X_mean = np.mean(X_train.astype(np.float32), axis=-1, keepdims=True)
+
+    U_n = [np.random.rand(I[i], new_dims[i]).astype(np.complex64) for i in range(len(new_dims))]
+
+    X_v = np.sqrt(training_samples).astype(np.float32) * (X_c - X_mean)
+
+    X_tilde = X_train.astype(np.float32) - X_c
+
+    for _ in tqdm(range(10), desc='Total Iterations'):
+        for n in range(len(new_dims)):
+            Z_tilde = tl.unfold(multi_mode_dot(X_tilde.astype(np.complex64), [U_n[i].T for i in range(len(U_n)) if i != n], modes=[i for i in range(len(U_n)) if i != n]), mode=n)
+
+            S_w = (Z_tilde @ Z_tilde.T).astype(np.complex64)
+
+            Z_v = tl.unfold(multi_mode_dot(X_v.astype(np.complex64), [U_n[i].T for i in range(len(U_n)) if i != n], modes=[i for i in range(len(U_n)) if i != n]), mode=n)
+
+            S_b = (Z_v @ Z_v.T).astype(np.complex64)
+
+            phi = np.trace(U_n[n].T @ S_b @ U_n[n]) / np.trace(alpha * (U_n[n].T @ S_w @ U_n[n]) + (1-alpha) * np.eye(new_dims[n]).astype(np.complex64))
+            print(phi)
+
+            U_n[n] = np.linalg.eig(S_b - phi * S_w)[1][:, :new_dims[n]]
+            
+            X_train_unfolded = tl.unfold(X_train.astype(np.complex64), mode=n)
+
+            U_n[n] = np.linalg.eig(U_n[n] @ U_n[n].T @ X_train_unfolded @ X_train_unfolded.T @ U_n[n] @ U_n[n].T)[1][:, :new_dims[n]]
+
+    return U_n, phi
+
+new_dims = (10, 10)
+U_n, phi = HODA(X_train, y_train, new_dims, alpha=1e7)
+print('Phi at Convergence:', phi)
+
+G_train = multi_mode_dot(X_train, [np.real(U.T) for U in U_n], modes=[0, 1])
+G_test = multi_mode_dot(X_test, [np.real(U.T) for U in U_n], modes=[0, 1])
 ```
 </Details>
+
+With 'new_dims' set at (10, 10), the dimensionality of both 'G_train' and 'G_test' are reduced to 10 x 10 x samples. Now, you might be wondering: what do the example images from earlier look like now? Well, let's find out!
+
+<Details markdown="block">
+<summary>Click here to view the code</summary>
+
+```python
+G_train = multi_mode_dot(X_train, [np.real(U.T) for U in U_n], modes=[0, 1])
+G_test = multi_mode_dot(X_test, [np.real(U.T) for U in U_n], modes=[0, 1])
+
+fig, axes = plt.subplots(5, 5, sharex=True, sharey=True, figsize=(10, 10))
+for i, ax in enumerate(axes.flat):
+    ax.imshow(G_train[..., indices[i]], cmap='gray')
+    ax.set_title(y_train[indices[i]])
+
+fig.suptitle('25 Randomly Sampled Images from the Dataset')
+plt.tight_layout()
+plt.show()
+```
+</Details>
+
+![download-1](https://github.com/user-attachments/assets/31af00fc-3c0b-4c53-b6c3-01111141758d)
+
+The images look nothing like they did before, and they appear to be uninformative! But, let's put it through a model and see how well it performs.
 
 ## Fitting the Model
-<Details markdown="block">
-<summary>Click here to view the code</summary>
+
+We'll be using a Support Vector Classifier from sklearn's library for classification. The first step is to flatten the columns of the data, and we can then fit the model with our new features.
 
 ```python
+G_train = tl.unfold(G_train, mode=-1)
+G_test = tl.unfold(G_test, mode=-1)
+
+svc_model = SVC(probability=True, C=100, kernel='rbf', gamma='scale')
+svc_model.fit(G_train, y_train)
 ```
-</Details>
+
+The model performed fairly well, with an accuracy of 70.59% with minimal tuning! Here's a detailed overview of the performance:
+
+![download-2](https://github.com/user-attachments/assets/3c73c806-23a1-4d90-95d0-f05886bf17c1)
+
+Most of the predictions are falling across the diagonal, which shows us that the algorithm can pick up relevant features. To improve the model, we could use neural networks, but I wanted to focus on the ability to classify high-dimensional data with simpler models.
 
 ## Conclusion
+
+In this project, we’ve demonstrated the power of Higher-Order Discriminant Analysis (HODA) combined with Support Vector Machines (SVM) for classifying celebrity photos. Despite not using any neural networks, the model achieved impressive results, showcasing the effectiveness of advanced tensor decompositions for feature extraction. Facial recognition technology, as explored here, has vast applications in various fields including security, healthcare, social media, and entertainment, making it an indispensable tool in modern society. Looking ahead, there are several ways to enhance this project. Incorporating larger and more diverse datasets could further improve model robustness. Additionally, optimizing the HODA algorithm and exploring its integration with other machine-learning models could yield even better performance.
+
+Thank you for following along on this journey into facial recognition technology. I hope you found it informative and fun!
 
 ## References
 
