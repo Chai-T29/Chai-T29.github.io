@@ -25,7 +25,7 @@ Here are the contents of this project. If you are here just for a casual read, t
 6.  [References](#references)
 
 ## Loading the Data
-To start this project, we download data from [Zenodo's website](https://zenodo.org/records/1188976) [[7]](#references). For this project, we will only be focusing on the speech dataset. Here are the libraries you will need to start:
+To start this project, we download data from [here](https://zenodo.org/records/1188976) [[7]](#references). For this project, we will only be focusing on the speech dataset. Here are the libraries you will need to start:
 
 ```python
 import requests
