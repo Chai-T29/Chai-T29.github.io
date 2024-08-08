@@ -10,9 +10,9 @@ ECG, or electrocardiogram, data measures the activity of the heart, and doctors 
 
 <!--more-->
 
-This project is an extension of a project I worked on in my High-Dimensional Data Analytics Class under Professor Kamran Paynabar [2], but I take it a step further for this project. This project covers tools and tricks that can improve classification tasks for ECG data to detect heart abnormalities, which is vital for the early detection of heart diseases.
+This project is a continuation of an assignment I worked on in my High-Dimensional Data Analytics Class under Professor Kamran Paynabar [[2]](#references), but with a different dataset. This project covers tools and tricks that can improve classification tasks for ECG data to detect heart abnormalities [[2]](#references). This article showcases the efficacy of applying dimensionality reduction on ECG data and its effects on model performance [[2]](#references).
 
-ECG data is functional and is considered to be a continuous function. In simpler terms, the number of data points for ECG data is dependent on how many times we sample the ECG signal, which can theoretically reach close to infinity! So, how do we represent this data in a machine-readable format that will not only be quick to compute, but more accurate as well? That's what this project aims to talk about! Here are the key objectives:
+ECG data is functional and is considered to be a continuous function. In simpler terms, the number of data points for ECG data is dependent on how many times we sample the ECG signal, which can theoretically reach close to infinity [[2]](#references)! So, how do we represent this data in a machine-readable format that will not only be quick to compute, but more accurate as well? That's what this project aims to talk about! Here are the key objectives:
 
 -  How can we effectively reduce the dimensionality of ECG data?
 -  How do classification models perform on ECG data?
@@ -90,7 +90,7 @@ We can see clear separation in the chart above, but how do we classify signals l
 
 ## B-Splines Approach
 
-B-Splines, or Basis Splines, are piece-wise polynomial approximations of a curve. They are defined recursively as such [1][2]:
+B-Splines, or Basis Splines, are piece-wise polynomial approximations of a curve. They are defined recursively as such [[1]](#references)[[2]](#references):
 
 $$
 B_{i, j}(x) = \frac{x - t_i}{t_{i+j} - t_i} B_{i, j-1}(x) \\ + \frac{t_{i+j+1} - x}{t_{i+j+1} - t_{i+1}} B_{i+1, j-1}(x)
@@ -235,7 +235,7 @@ We can see that most of the labels were predicted correctly as our model has sho
 
 ## Functional Principal Component Analysis Approach
 
-We can alternatively figure out what features explain the most variance in the functional data (functional principal components). Below is the methodology to do this [2]:
+We can alternatively figure out what features explain the most variance in the functional data (functional principal components). Below is the methodology to do this [[2]](#references)!:
 
 1.	Mean Function:
 Compute the mean function $\mu(t)$:
