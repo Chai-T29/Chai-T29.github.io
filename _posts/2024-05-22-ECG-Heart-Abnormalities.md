@@ -6,7 +6,7 @@ date: 2024-05-22
 feature_image: images/ecg.jpg
 ---
 
-ECG, or electrocardiogram, data measures the activity of the heart, and doctors use this information to help diagnose a plethora of heart diseases. The article covers an assignment I did in my High-Dimensional Data Analytics Class under Professor Kamran Paynabar. The purpose of this assignment is to develop a quick and scalable solution for early heart disease detection. Automation in the healthcare industry can help alleviate some of the pressures caused by inefficient human resources. Although this project covers one use case, this methodology can be applied across many aspects of healthcare analytics. I hope you enjoy this read!
+ECG, or electrocardiogram, data measures the activity of the heart, and doctors use this information to help diagnose a plethora of heart diseases. The article covers an assignment I did in my High-Dimensional Data Analytics Class under Professor Kamran Paynabar. The purpose of this assignment is to develop a quick and scalable solution for early heart disease detection. Automation in the healthcare industry can help alleviate some of the pressures caused by inefficient human resources. Although this assignment covers one use case, this methodology can be applied across many aspects of healthcare analytics. I hope you enjoy this read!
 
 <!--more-->
 
@@ -428,7 +428,7 @@ This method also performed extremely well, with an accuracy of $97.42$%! However
 
 ## Conclusion
 
-With this project, we have learned how to preprocess and reduce the dimensionality of ECG data with B-Splines and FPCA, as well as how to apply classification models to detect heart abnormalities using the reduced feature space [[2]](#references). These skills are invaluable for developing effective models in medical diagnostics and other fields, especially when functional data is involved. Soon, we will be seeing a lot more automation in the field of healthcare, which will improve patient outcomes, drive down costs, and improve medical accessibility across the world.
+With this assignment, we have learned how to preprocess and reduce the dimensionality of ECG data with B-Splines and FPCA, as well as how to apply classification models to detect heart abnormalities using the reduced feature space [[2]](#references). These skills are invaluable for developing effective models in medical diagnostics and other fields, especially when functional data is involved. Soon, we will be seeing a lot more automation in the field of healthcare, which will improve patient outcomes, drive down costs, and improve medical accessibility across the world.
 
 If you've made it this far, I hope you enjoyed the read! Happy learning!
 
