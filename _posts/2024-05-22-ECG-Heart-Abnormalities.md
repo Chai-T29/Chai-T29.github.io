@@ -422,13 +422,13 @@ plt.show()
 
 ![fpca-results](https://github.com/user-attachments/assets/edc93a5b-3e07-4ed2-a728-c40ebeb55e05)
 
-This method also performed extremely well, with an accuracy of $97.42$%! However, there are a lot more false positives using this approach, so B-Splines are the better approach overall.
+This method also performed extremely well, with an accuracy of $97.42$%! However, there are more false positives with the FPCA approach, so B-Splines are better overall.
 
 <br>
 
 ## Conclusion
 
-With this project, we have learned how to preprocess and reduce the dimensionality of ECG data with B-Splines and FPCA, as well as how to apply classification models to detect heart abnormalities using the reduced feature space. These skills are invaluable for developing effective models in medical diagnostics and other fields, especially when functional data is involved. Soon, we will be seeing a lot more automation in the field of healthcare, which will improve patient outcomes, drive down costs, and improve medical accessibility across the world.
+With this project, we have learned how to preprocess and reduce the dimensionality of ECG data with B-Splines and FPCA, as well as how to apply classification models to detect heart abnormalities using the reduced feature space [[2]](#references). These skills are invaluable for developing effective models in medical diagnostics and other fields, especially when functional data is involved. Soon, we will be seeing a lot more automation in the field of healthcare, which will improve patient outcomes, drive down costs, and improve medical accessibility across the world.
 
 If you've made it this far, I hope you enjoyed the read! Happy learning!
 
