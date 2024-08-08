@@ -16,7 +16,7 @@ This project addresses the complex challenge of emotion classification using aud
 
 ## Contents
 
-Here are the contents of this project. If you are here just for a casual read, then you can just go ahead and skip over to the [second section](#video-feature-extraction).
+Here are the contents of this project. If you are here just for a casual read, then you can go ahead and skip over to the [second section](#video-feature-extraction).
 1.  [Loading the Data](#loading-the-data)
 2.  [Video Feature Extraction](#video-feature-extraction)
 3.  [Audio Feature Extraction](#audio-feature-extraction)
@@ -25,7 +25,7 @@ Here are the contents of this project. If you are here just for a casual read, t
 6.  [References](#references)
 
 ## Loading the Data
-To start this project, we download data from [Zenodo's website](https://zenodo.org/records/1188976). For this project, we will only be focusing on the speech dataset. Here are the libraries you will need to start:
+To start this project, we download data from [Zenodo's website](https://zenodo.org/records/1188976) [[7]](#references). For this project, we will only be focusing on the speech dataset. Here are the libraries you will need to start:
 
 ```python
 import requests
@@ -794,3 +794,5 @@ If you've made it this far, thank you for giving this a read, and happy learning
 [5] Hastie, T., Tibshirani, R., Friedman, J. (2009). Basis Expansions and Regularization. In: The Elements of Statistical Learning. Springer Series in Statistics. Springer, New York, NY. https://doi.org/10.1007/978-0-387-84858-7_5
 
 [6] Kolda, Tamara G., and Brett W. Bader. "Tensor Decompositions and Applications." *SIAM Review*, vol. 51, no. 3, 2009, pp. 455-500. Society for Industrial and Applied Mathematics. https://doi.org/10.1137/07070111X.
+
+[7] Livingstone, S. R., & Russo, F. A. (2018). The Ryerson Audio-Visual Database of Emotional Speech and Song (RAVDESS) [Data set]. In PLoS ONE (1.0.0, Vol. 13, Number 5, p. e0196391). Zenodo. https://doi.org/10.5281/zenodo.1188976
