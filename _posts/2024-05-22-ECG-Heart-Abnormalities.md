@@ -6,19 +6,19 @@ date: 2024-05-22
 feature_image: images/ecg.jpg
 ---
 
-ECG, or electrocardiogram, data measures the activity of the heart, and doctors use this information to help diagnose a plethora of heart diseases. The purpose of this project is to develop a quick and scalable solution for early heart disease detection. Automation in the healthcare industry can help alleviate some of the pressures caused by inefficient human resources. Although this project covers one use case, this methodology can be applied across many aspects of healthcare analytics. I hope you enjoy this read!
+ECG, or electrocardiogram, data measures the activity of the heart, and doctors use this information to help diagnose a plethora of heart diseases. The article covers an assignment I did in my High-Dimensional Data Analytics Class under Professor Kamran Paynabar. The purpose of this assignment is to develop a quick and scalable solution for early heart disease detection. Automation in the healthcare industry can help alleviate some of the pressures caused by inefficient human resources. Although this project covers one use case, this methodology can be applied across many aspects of healthcare analytics. I hope you enjoy this read!
 
 <!--more-->
 
-This project is a continuation of an assignment I worked on in my High-Dimensional Data Analytics Class under Professor Kamran Paynabar [[2]](#references), but with a different dataset. This project covers tools and tricks that can improve classification tasks for ECG data to detect heart abnormalities [[2]](#references). This article showcases the efficacy of applying dimensionality reduction on ECG data and its effects on model performance [[2]](#references).
-
-ECG data is functional and is considered to be a continuous function. In simpler terms, the number of data points for ECG data is dependent on how many times we sample the ECG signal, which can theoretically reach close to infinity [[2]](#references)! So, how do we represent this data in a machine-readable format that will not only be quick to compute, but more accurate as well? That's what this project aims to talk about! Here are the key objectives:
+ECG data is functional and is considered to be a continuous function. In simpler terms, the number of data points for ECG data is dependent on how many times we sample the ECG signal, which can theoretically reach close to infinity [[2]](#references)! So, how do we represent this data in a machine-readable format that will not only be quick to compute, but more accurate as well? That's what this assignment aims to talk about! Here are the key objectives:
 
 -  How can we effectively reduce the dimensionality of ECG data?
 -  How do classification models perform on ECG data?
 -  What insights can we gain about heart abnormalities from our models?
 
 ## Contents
+
+All of the contents of this assignment are from Professor Kamran Paynabar's High-Dimensional Data Analytics class [[2]](#references). Here are the steps covered:
 
 1.  [Understanding our Data](#understanding-our-data)
 2.  [B-Splines Approach](#b-splines-approach)
