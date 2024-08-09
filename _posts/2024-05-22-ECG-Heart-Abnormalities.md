@@ -186,7 +186,7 @@ y_pred = svc_model.predict(H_test)
 
 ![download-2](https://github.com/user-attachments/assets/2699d4ca-5aea-4b64-a603-c41911e25aa2)
 
-The model achieved an astonishing $93.044$% accuracy on the 4500 test samples! And, the model was trained in a fraction of a second with only 500 samples of data! This is impressive, to say the least. Let's see what the actual vs. predicted labels look like:
+The model achieved a $93.044$% accuracy on the 4500 test samples! And, the model was trained in a fraction of a second with only 500 samples of data! Let's see what the actual vs. predicted labels look like:
 
 <Details markdown="block">
 <summary>Click here to view the code</summary>
@@ -197,14 +197,14 @@ fig, axes = plt.subplots(nrows=n_labels, sharex=True, figsize=(12, 3*n_labels))
 for i in range(1, n_labels + 1):
     axes[i-1].plot(xx, X_test[y_test==i].T, c='white', lw=1)
     axes[i-1].plot(xx, X_test[y_pred==i].T, c=cmap(i-1), lw=0.2)
-    axes[i-1].set_title('Actual (in white) vs Predicted for Class 1')
+    axes[i-1].set_title(f'Actual (in white) vs Predicted for Class {i}')
 
 plt.tight_layout()
 plt.show()
 ```
 </Details>
 
-![download-3](https://github.com/user-attachments/assets/ed9b6728-3eb0-412b-b02e-8ccad41552b4)
+![download-3](https://github.com/user-attachments/assets/83c4f743-9d5b-4f26-a333-6f70f4475b19)
 
 We can see that most of the labels were predicted correctly as our model has shown earlier, but it is not performing too well on classes 3-5. This is most likely because of an undersampling issue in these classes. Let's try an FPCA approach to see how well it performs when compared to the B-Spline approach.
 
@@ -390,13 +390,33 @@ y_pred = svc_model.predict(FPC_test)
 ![download-8](https://github.com/user-attachments/assets/a55f0329-4dea-427e-a328-3ad78523af97)
 
 
-This method also performed extremely well, with an accuracy of $93.288$, which is slightly higher than the B-Spline approach!
+This method also performed extremely well, with an accuracy of $93.288$, which is slightly higher than the B-Spline approach! Let's see what the actual vs. predicted labels look like:
+
+<Details markdown="block">
+<summary>Click here to view the code</summary>
+
+```python
+sns.set_style('darkgrid')
+fig, axes = plt.subplots(nrows=n_labels, sharex=True, figsize=(12, 3*n_labels))
+for i in range(1, n_labels + 1):
+    axes[i-1].plot(xx, X_test[y_test==i].T, c='white', lw=1)
+    axes[i-1].plot(xx, X_test[y_pred==i].T, c=cmap(i-1), lw=0.2)
+    axes[i-1].set_title(f'Actual (in white) vs Predicted for Class {i}')
+
+plt.tight_layout()
+plt.show()
+```
+</Details>
+
+![download-9](https://github.com/user-attachments/assets/80001603-362f-4ef2-98b7-bcd5e7d67ff9)
+
+We are still facing a similar issue in performance for classes 3-5, but it is performing slightly better in this regard when compared to the B-Spline approach.
 
 <br>
 
 ## Conclusion
 
-With this project, we have learned how to preprocess and reduce the dimensionality of ECG data with B-Splines and FPCA, as well as how to apply classification models to detect heart abnormalities using the reduced feature space [[2]](#references). Both models perform extremely well on classes 1 and 2, but underperform for the remaining classes. This is most likely due to the undersampling problem of this dataset. A way we can avoid this issue for further research is by oversampling the underperforming classes for the model to pick up more information, or we can utilize more robust models, such as deep neural networks.
+With this project, we have learned how to preprocess and reduce the dimensionality of ECG data with B-Splines and FPCA, as well as how to apply classification models to detect heart abnormalities using the reduced feature space [[2]](#references). Both models perform extremely well in classes 1 and 2 but underperform in the remaining classes. This is most likely due to the undersampling problem of this dataset. A way we can avoid this issue for further research is by oversampling the underperforming classes for the model to pick up more information, or we can utilize more robust models, such as deep neural networks.
 
 Overall, the skills learned from this project are invaluable for developing effective models in medical diagnostics and other fields, especially when functional data is involved. Soon, we will be seeing a lot more automation in the field of healthcare, which will improve patient outcomes, drive down costs, and improve medical accessibility across the world.
 
