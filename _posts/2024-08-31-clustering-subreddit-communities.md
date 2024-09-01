@@ -87,7 +87,7 @@ With our data set up and ready to go, we can begin constructing a weighted Adjac
 
 For each user $u$, let  $P_u$  be the set of pages visited by $u$, and let $p_1$ and $p_2$ be any two pages in $P_u$. Define the class probabilities associated with $p_1$ and $p_2$ as $c(p_1)$ and $c(p_2)$, respectively.
 
-***The Adjacency Matrix $A$ is defined as follows [2]:***
+***The Adjacency Matrix $A$ is defined as follows [[2]](#references):***
 $$
 A_{i, j} = \sum_{u \in U} \sum_{\substack{p_1, p_2 \in P_u \ p_1 \neq p_2}} c(p_1) \cdot c(p_2)
 $$
@@ -119,7 +119,7 @@ $$
 A’ = A[\mathbf{m} = 1, \mathbf{m} = 1]
 $$
 
-***The Degree Matrix $D$ is defined as follows [2]:***
+***The Degree Matrix $D$ is defined as follows [[2]](#references):***
 
 Given a reduced adjacency matrix $A{\prime}$ (obtained from the original adjacency matrix $A$ after removing isolated nodes), the normalized diagonal degree matrix $D$ is defined as:
 
@@ -127,9 +127,9 @@ $$
 D = \text{diag}\left(\frac{1}{\sqrt{\sum_{j=1}^{m} A’_{i,j}}}\right)
 $$
 
-***The Graph Laplacian Matrix $L$ is defined as follows [1]:***
+***The Graph Laplacian Matrix $L$ is defined as follows [[1]](#references):***
 
-Via the normalized cuts method [1], the Graph Laplacian can be defined as:
+Via the normalized cuts method [[1]](#references), the Graph Laplacian can be defined as:
 
 $$
 L = D \times A \times D
@@ -141,7 +141,7 @@ $$
 L = L + L^T
 $$
 
-***Computing top $k$ eigenvectors***
+Computing top $k$ eigenvectors:
 
 Given the eigenvalue decomposition for $L$:
 
@@ -166,6 +166,9 @@ $$
 ### Implementing the Algorithm
 
 With all the math aside, we can now create and run our algorithm!
+
+<Details markdown="block">
+<summary>Click here to view the code</summary>
 
 ```python
 A = np.zeros(shape=(nodes.shape[0], nodes.shape[0]), dtype=np.float32)
@@ -195,6 +198,7 @@ print(f"D.shape: {D.shape}")
 print(f"L.shape: {L.shape}")
 print(f"x.shape: {x.shape}")
 ```
+</Details>
 
 Since the computation of the eigenvalue decomposition is extremely time-consuming, we can save the eigenvalue decomposition matrix with the code below.
 
@@ -208,20 +212,130 @@ np.save(os.path.join(eigs, 'eigenvectors_x.npy'), x)
 
 ## K-Means Algorithm
 
+With our eigenvectors matrix computed, we can apply the k-means algorithm on this new dataset. Because of the nature of the Graph Laplacian, the data will naturally separate at weak edges, which creates local communities in the data. If you wish to skip all the math, you can click [here](#implementing-k-means-for-spectral-clustering).
+
+The k-means algorithm aims to solve [[2]](#references):
+
+Given $m$ data points $x^i \in \mathbb{R}^n, i = 1, . . . , m$, K-means clustering algorithm groups them into $k$ clusters by minimizing the function over $\{r^{ij},\mu^j\}.$
+
+$$
+J = \sum_{i=1}^m \sum_{j=1}^k r^{ij} \lVert x^i − \mu^j \lVert^2,
+$$
+
+where $r^{ij} = 1$ if $x^i$ belongs to the $j$-th cluster and $r^{ij} = 0$ otherwise.
+
+Once the minimization of the function over $\{r^{ij},\mu^j\}.$ is solved, 
+
+$$
+\mu^j = \frac{\sum_{i=1}^m r^{ij} x^i}{\sum_{i=1}^m r^{ij}}
+$$
+$$
+r^{ij} =
+\begin{cases}
+1 & if \>\> j = \underset{j=1,...,k}{\operatorname{arg min}} \lVert x^i − c^j \lVert^2 \\
+0 & if \>\> j \neq \underset{j=1,...,k}{\operatorname{arg min}} \lVert x^i − c^j \lVert^2
+\end{cases}
+$$
+
+### Implementing K-Means for Spectral Clustering
+
+Let's now implement the algorithm to find $k$ communities.
+
 <Details markdown="block">
 <summary>Click here to view the code</summary>
 
 ```python
+k = 1000
 
+X = x[:, -k:]
+labels = KMeans(n_clusters=k, n_init='auto').fit(X.real).labels_  # kmeans centers
+
+labs = np.unique(labels)
+
+clusters = []
+lengths = []
+for c in tqdm(labs):
+    inds = np.where(labels == c)[0]
+    cluster = {}
+    
+    for i in inds:
+        if reverse_map[i] in cluster:
+            cluster[reverse_map[i]] += 1
+        else:
+            cluster[reverse_map[i]] = 1
+            
+    clusters.append(cluster)
+    lengths.append(len(cluster))
+    
+groups = pd.DataFrame({"Cluster": labs, "Subreddits": clusters, "Cluster Size": lengths}).sort_values(by="Cluster Size", ascending=False)
+del clusters, cluster
+
+results = pd.DataFrame({"Cluster": labels, "Subreddit": [reverse_map[i] for i in range(len(labels))]}).sort_values(by="Subreddit", ascending=False)
+
+display(groups.head(), results.head())
 ```
 </Details>
 
+<br>
+
+## Results and Observations
+
+To understand how the spectral clustering algorithm performed, we can visualize two of the clusters to understand their relatedness to eachother. I had to run the algorithm several times because there were way too many NSFW Subreddits showing up!
 
 <Details markdown="block">
 <summary>Click here to view the code</summary>
 
 ```python
+top_percent_index = int(len(groups) * 0.02)
 
+random_indices = np.random.choice(np.arange(1, top_percent_index), size=2, replace=False)
+
+for i in random_indices:
+    subreddit_dict = groups.iloc[i]['Subreddits']
+    cluster_nodes = list(subreddit_dict.keys())
+    
+    indices = [nodes_map[node] for node in cluster_nodes if node in nodes_map]
+    subgraph = nx.from_numpy_array(A[np.ix_(indices, indices)])
+    subgraph = nx.relabel_nodes(subgraph, {i: reverse_map[i] for i in indices})
+    edge_weights = np.array([A[u, v] for u, v in subgraph.edges()])
+    edge_weights = (edge_weights - edge_weights.min()) / (edge_weights.max() - edge_weights.min()) * 5
+    
+    wordcloud = WordCloud(width=800, height=400, background_color='black', colormap='OrRd').generate_from_frequencies(subreddit_dict)
+    
+    plt.figure(figsize=(10, 5))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')
+    plt.title(f"Cluster {groups.iloc[i]['Cluster']} (Size: {groups.iloc[i]['Cluster Size']})")
+    plt.show()
+    
+    plt.figure(figsize=(12, 8))
+    pos = nx.spring_layout(subgraph, seed=42)  # Positions for all nodes
+    nx.draw(subgraph, pos, with_labels=False, node_color='red', edge_color='gray', width=np.log10(edge_weights+0.8), node_size=50, font_size=10)
+    plt.title(f"Subcommunity Network for Cluster {groups.iloc[i]['Cluster']}")
+    plt.show()
+    
+    print('\n\n')
 ```
 </Details>
 
+![download-0](https://github.com/user-attachments/assets/ccfefc8a-4701-43cb-941f-891d1f74d8af)
+
+![download-1](https://github.com/user-attachments/assets/f0578010-5275-49d4-82c2-e655883afd2b)
+
+<br>
+
+![download-2](https://github.com/user-attachments/assets/de624763-b4c3-4dac-a328-061806b645a1)
+
+![download-3](https://github.com/user-attachments/assets/a8926feb-8217-4c74-8c9a-2d6b0e248be3)
+
+While the Spectral Clustering approach has revealed clear community trends among subreddits, the presence of outlier subreddits suggests that there may be room for optimization, particularly in choosing the number of clusters ($k$). This could be due to either the complexity of user behavior or a suboptimal value of $k$. Additionally, the choice of using commenting activity as a measure of subreddit engagement, while useful, might not be the best indicator of true user interest. Future projects could explore other data features, like subreddit joins or upvotes, which might provide a more accurate representation of user behavior.
+
+The computational expense of Spectral Clustering also raises the question of whether simpler algorithms could achieve similar results. While Spectral Clustering excels at capturing complex relationships, it might be worth exploring more straightforward models that could offer efficiency gains, especially for large-scale applications. Despite these considerations, the model’s ability to uncover nuanced community structures without relying on complex neural networks is a significant advantage, making it a promising tool for building unsupervised recommendation systems in the future.
+
+<br>
+
+## References
+
+[1] Jianbo Shi and J. Malik, "Normalized cuts and image segmentation," in IEEE Transactions on Pattern Analysis and Machine Intelligence, vol. 22, no. 8, pp. 888-905, Aug. 2000, doi: 10.1109/34.868688.
+
+[2] Xie, Yao, "Spectral Clustering." Class lecture, Computational Data Analytics, Georgia Institute of Technology, Atlanta, GA. August 21, 2024.
