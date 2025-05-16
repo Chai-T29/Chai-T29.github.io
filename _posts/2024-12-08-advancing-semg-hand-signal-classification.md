@@ -138,7 +138,10 @@ x^{(\ell+1)} = x^{(\ell)} \,\circ\,(x^{(\ell)}\,W^{(\ell)}) \;+\; b^{(\ell)} \;+
 $$
 
 where $\circ$ is the Hadamard (elementwise) product.  
-<!-- Add Figure 4: DCN Architecture -->
+
+<img width="772" alt="Screenshot 2025-05-16 at 4 36 41 PM" src="https://github.com/user-attachments/assets/1943994a-949f-4b66-b1f8-7a3559e93385" />
+
+Image Source: [https://arxiv.org/pdf/2008.13535](https://arxiv.org/pdf/2008.13535)
 
 #### e. Multi-Layer Perceptron (MLP)
 
