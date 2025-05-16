@@ -75,8 +75,11 @@ X^{(j)} = [\,x_i, x_{i+1}, \dots, x_{i+W-1}\],
 Y^{(j)} = [\,y_i, y_{i+1}, \dots, y_{i+W-1}\],
 $$
 
-for $j=1,\dots,N$, where $N$ is the number of windows.  
-<!-- Add Figure 1: Sliding Window Pattern -->
+for $j=1,\dots,N$, where $N$ is the number of windows.
+
+<img width="514" alt="Screenshot 2025-05-16 at 4 31 22 PM" src="https://github.com/user-attachments/assets/517465cc-4b10-4881-ab96-a90ca5d20548" />
+
+Source: [https://www.danorlandoblog.com/use-the-sliding-window-pattern-to-solve-problems-in-javascript/](Source: https://www.danorlandoblog.com/use-the-sliding-window-pattern-to-solve-problems-in- javascript/)
 
 #### b. Frequency-Domain Transformation (FFT)
 
