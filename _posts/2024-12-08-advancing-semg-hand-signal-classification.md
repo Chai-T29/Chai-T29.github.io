@@ -163,7 +163,17 @@ z^{(K)} = W^{(K)}\,z^{(K-1)} + b^{(K)},
 \hat y = \mathrm{softmax}\bigl(z^{(K)}\bigr).
 $$
 
-<!-- Add Figure 5: MLP Architecture -->
+<p align="center">
+<img width="724" alt="Screenshot 2025-05-16 at 4 52 00 PM" src="https://github.com/user-attachments/assets/a251a73f-f3c6-47f3-be8c-29a8a9836a95" />
+</p>
+
+#### f. Model Architecture Overview
+
+The complete architecture for the windowing approach is as follows:
+
+<p align="center">
+<img width="860" alt="Screenshot 2025-05-16 at 4 54 44 PM" src="https://github.com/user-attachments/assets/451100a9-e8f5-46fa-a856-2bc5ec4364f5" />
+</p>
 
 ### 3. Non-Windowing Approach
 
@@ -180,7 +190,7 @@ P(y=c\mid x)
 = \frac{1}{T} \sum_{t=1}^T P_t(y=c\mid x).
 $$
 
-<!-- Add Figure 6: Random Forest Diagram -->
+
 
 #### c. Outer-Product Neural Network (OPNN)
 
