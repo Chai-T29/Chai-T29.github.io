@@ -77,9 +77,11 @@ $$
 
 for $j=1,\dots,N$, where $N$ is the number of windows.
 
+<p align="center">
 <img width="514" alt="Screenshot 2025-05-16 at 4 31 22 PM" src="https://github.com/user-attachments/assets/517465cc-4b10-4881-ab96-a90ca5d20548" />
 
 Image Source: [https://www.danorlandoblog.com/use-the-sliding-window-pattern-to-solve-problems-in-javascript/](https://www.danorlandoblog.com/use-the-sliding-window-pattern-to-solve-problems-in-javascript/)
+</p>
 
 #### b. Frequency-Domain Transformation (FFT)
 
@@ -101,9 +103,11 @@ $$
 
 Stacking across $M$ channels yields a feature vector $H^{(j)}\in\mathbb{R}^{2M(K+1)}$, where $K=\lfloor W/2\rfloor$.  
 
+<p align="center">
 <img width="521" alt="Screenshot 2025-05-16 at 4 33 46 PM" src="https://github.com/user-attachments/assets/698a6fdd-e9b2-4e59-b8da-8dbb437727c3" />
 
 Image Source: [https://www.researchgate.net/figure/Three-Components-of-a-Complex-Number-In-Phase-Quadrature-and-Phase-Incoming-radar-wave_fig2_332511933](https://www.researchgate.net/figure/Three-Components-of-a-Complex-Number-In-Phase-Quadrature-and-Phase-Incoming-radar-wave_fig2_332511933)
+</p>
 
 #### c. CNN for Frequency-Domain Feature Extraction
 
@@ -125,7 +129,9 @@ $$
 
 Each block also includes BatchNorm, MaxPool and Dropout.  
 
+<p align="center">
 <img width="882" alt="Screenshot 2025-05-16 at 4 36 04 PM" src="https://github.com/user-attachments/assets/5d6890db-423e-4b1e-ae4a-c5756f33980c" />
+</p>
 
 #### d. Deep Cross Network (DCN)
 
@@ -139,9 +145,11 @@ $$
 
 where $\circ$ is the Hadamard (elementwise) product.  
 
+<p align="center">
 <img width="772" alt="Screenshot 2025-05-16 at 4 36 41 PM" src="https://github.com/user-attachments/assets/1943994a-949f-4b66-b1f8-7a3559e93385" />
 
 Image Source: [https://arxiv.org/pdf/2008.13535](https://arxiv.org/pdf/2008.13535)
+</p>
 
 #### e. Multi-Layer Perceptron (MLP)
 
