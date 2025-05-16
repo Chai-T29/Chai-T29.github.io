@@ -1,11 +1,10 @@
 ---
-
 layout: post
 title: "Advancing sEMG Hand Signal Classification"
 description: "A comprehensive analysis of sEMG-based gesture recognition with windowed and non-windowed approaches."
 date: 2024-12-08
-feature\_image: images/emg.jpg
-----------------------------------------------
+feature_image: images/emg.jpg
+---
 
 Surface Electromyography (sEMG) records the electrical activity of muscles and has become a cornerstone in prosthetic control and human–machine interfaces. In this report, we investigate how different preprocessing strategies — windowing with FFT-based feature extraction and non-windowed architectures — impact classification accuracy and inference speed using modern hardware accelerators.<br> <br>
 
