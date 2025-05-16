@@ -1,341 +1,175 @@
 ---
+
 layout: post
-title: "Clustering Subreddit Communities"
-description: "This project models Reddit user interactions to understand behavior and patterns."
-date: 2024-08-31
-feature_image: images/subreddit.jpg
----
+title: "Advancing sEMG Hand Signal Classification"
+description: "A comprehensive analysis of sEMG-based gesture recognition with windowed and non-windowed approaches."
+date: 2024-12-08
+feature\_image: images/emg\_classification.jpg
+----------------------------------------------
 
-This project models Reddit user interactions to understand behavior and patterns. This project utilizes Spectral Clustering from the Graph Laplacian (using normalized cuts) to uncover local communities where users have more concentrated interactions. We discuss the importance of understanding user behavior, the results of this project, and areas of improvement for further research. If you're interested, then let's dive right in!
+Surface Electromyography (sEMG) records the electrical activity of muscles and has become a cornerstone in prosthetic control and human–machine interfaces. In this report, we investigate how different preprocessing strategies — windowing with FFT-based feature extraction and non-windowed architectures — impact classification accuracy and inference speed using modern hardware accelerators.<br> <br>
 
-<!--more-->
+<!--more--><br>
 
-Reddit is a vast platform with countless communities, and understanding how these communities connect can provide valuable insights. For instance, knowing which Subreddits are often visited by the same users can help in creating better content recommendations, improving user engagement, or even in moderating content more effectively.
+The ability to classify hand gestures accurately and quickly is essential for real-time applications like prosthetic limbs. By comparing traditional windowed methods against direct feature modeling, we aim to identify which approach offers the best trade-off between performance and complexity.<br> <br>
 
-## Contents
+## Contents<br>
 
-Here are the main sections of this article:
+1. [Problem Statement](#problem-statement)<br>
+2. [Data Source](#data-source)<br>
+3. [Methodology](#methodology)<br>
 
-1. [Loading the Data](#loading-the-data)
-2. [Constructing the Graph Laplacian](#constructing-the-graph-laplacian)
-3. [K-Means Algorithm](#k-means-algorithm)
-4. [Results and Observations](#results-and-observations)
-5. [References](#references)
+   * [Windowing Approach](#windowing-approach)<br>
+   * [Non-Windowing Approach](#non-windowing-approach)<br>
+   * [Loss & Optimization](#loss--optimization)<br>
+4. [Evaluation Technique](#evaluation-technique)<br>
+5. [Results](#results)<br>
+6. [Conclusion & Future Work](#conclusion--future-work)<br>
+7. [References](#references)<br>
 
+   <br>
+
+## Problem Statement<br>
+
+Surface Electromyography measures the electricity that muscles release upon contraction. While windowing segments signals into fixed intervals for robust feature extraction, it introduces computational overhead and fixed temporal boundaries. Alternatively, non-windowed methods model each timestep directly, potentially reducing latency. This study evaluates both approaches to determine their impact on classification accuracy and inference time.<br> <br>
+
+## Data Source<br>
+
+We use the “EMG Data for Gestures” dataset from the UCI Machine Learning Repository, captured via a MYO Thalmic bracelet over eight channels for 36 subjects. Each recording includes a timestamp $t_i$, an 8-dimensional sEMG vector $x_i$, and a class label $y_i$ corresponding to one of eight static gestures.<br> <br>
+
+## Methodology<br>
+
+Below, we detail the mathematical formulations underpinning each pipeline.<br> <br>
+
+### Windowing Approach<br>
+
+#### a. Segmentation into Windows<br>
+
+Let the raw dataset be $\{t_i, x_i, y_i\}_{i=1}^n$, where $x_i \in \mathbb{R}^M$, $y_i \in \{c_1,\dots,c_C\}$. Applying a sliding window of length $W$ produces:<br>
+
+$$$
+X^{(j)} = [\,x_{i}, x_{i+1}, \dots, x_{i+W-1}\], \quad Y^{(j)} = [\,y_{i}, y_{i+1}, \dots, y_{i+W-1}\],
+$$<br>
+
+for \(j=1,\dots,N\), where \(N\) is the number of windows.<br>
+
+<!-- Add Figure: Sliding Window Pattern -->
 <br>
+#### b. Frequency-Domain Transformation (FFT)<br>
 
-## Loading the Data
+For each channel \(m\in\{1,\dots,M\}\), the windowed signal \(x^{(j)}_m\) undergoes a DFT via FFT:<br>
 
-The dataset was found on Kaggle and is called [Subreddit Interactions for 25,000 Users](https://www.kaggle.com/datasets/colemaclean/subreddit-interactions/data). The dataset contains three columns: "user", "subreddit", and "utc-stamp". For our analysis, we are only interested in the first two columns.
+$$$
 
-Before we start, we need to set up some libraries for our analysis and load in our data (Note: throughout this article, I will not be showing the subreddit names too often as far too many of them are NSFW!).
+X^{(j)}*m(k) ,=, \sum*{n=0}^{W-1} x\_{m}(n),e^{-2\pi i kn/W}, \quad k=0,\dots,\lfloor W/2\rfloor.
 
-```python
-import numpy as np
-import pandas as pd
-import networkx as nx
-from wordcloud import WordCloud
-import matplotlib.pyplot as plt
-%matplotlib inline
-from sklearn.cluster import KMeans
-from tqdm.notebook import tqdm
-import os
+$$$<br>
 
-interactions = pd.read_csv('reddit_data.csv').iloc[:, :-1]  # remove utc times
-interactions.tail()
-```
+We store magnitude and phase:<br>
 
-### Preprocessing the Data
+$$|X^{(j)}_m(k)| = \sqrt{\operatorname{Re}(X_m)^2 + \operatorname{Im}(X_m)^2}, \quad \angle X^{(j)}_m(k)=\arctan\frac{\operatorname{Im}(X_m)}{\operatorname{Re}(X_m)}.
+$$<br>
 
-Now that we have our data loaded in, we need to somehow standardize user interactions so that one user does not have greater influence than another user. The approach outlined in the code below groups the interactions by username and finds the proportion of visits made by a user on specific subreddits. Here's the mathematical formulation of this problem:
+The feature vector \(H^{(j)}\in\mathbb{R}^{2M(K+1)}\) is formed by stacking channels.<br>
 
-Given a dataset of interactions where each interaction is defined by a 'username' and a 'subreddit', we want to compute the probability of a user interacting with a specific subreddit. 
-
-$$
-p(u, s) = \frac{\sum_{i=1}^{n} r(u_i = u, s_i = s)}{\sum_{i=1}^{n} r(u_i = u)}
-$$
-
-Here, $n$ is the total number of interactions, $u_i$ is the $i$-th username, $s_i$ is the $i$-th subreddit in the dataset, and $r$ is the indicator function. Here is how we can implement this in Python efficiently:
-
-```python
-subreddit_counts = interactions.groupby(['username', 'subreddit']).size().reset_index(name='subreddit_count')
-total_counts = interactions.groupby('username').size().reset_index(name='total_count')
-merged_df = pd.merge(subreddit_counts, total_counts, on='username')
-merged_df['probabilities'] = merged_df['subreddit_count'] / merged_df['total_count']
-interactions = pd.merge(interactions, merged_df[['username', 'subreddit', 'probabilities']], on=['username', 'subreddit'], how='left').values
-
-del subreddit_counts, total_counts, merged_df
-
-interactions = np.vstack(tuple(set(map(tuple,interactions))))  # removing duplicate interactions
-display(interactions[-5:])
-```
-
-Now we have converted interactions into a numpy array and added a third columns with the interaction proportions by user. The data now only contains unique rows because we do not need to model redundant edges in our matrix. With this, we can create some maps that will help construct our adjacency matrix and reduce the computational complexity for algorithms later in this project.
-
-```python
-nodes = np.unique(interactions[:, 1])
-nodes_map = {node: i for i, node in enumerate(nodes)}
-reverse_map = {i: node for i, node in enumerate(nodes)}
-print("Number of Subreddit pages:", nodes.shape[0])
-```
-
+<!-- Add Figure: FFT Magnitude & Phase -->
 <br>
+#### c. CNN for Frequency-Domain Feature Extraction<br>
 
-## Constructing the Graph Laplacian
+Treating frequency bins as spatial dimension and channels as input channels, a 1D convolution layer with filter \(W\in\mathbb{R}^{F\times C_{in}\times C_{out}}\) and bias \(b\) produces:<br>
 
-With our data set up and ready to go, we can begin constructing a weighted Adjacency Matrix. In our case, let $A$ be an adjacency matrix where $A_{i, j}$ represents the weighted connection between node $i$ and node $j$. Nodes are mapped from pages using a mapping function $\text{nodes\_map}$ such that $i = \text{nodes\_map}(\text{page1})$ and $j = \text{nodes\_map}(\text{page2})$. If you wish to skip all the math, you can click [here](#implementing-the-algorithm).
+$$$
 
-For each user $u$, let  $P_u$  be the set of pages visited by $u$, and let $p_1$ and $p_2$ be any two pages in $P_u$. Define the class probabilities associated with $p_1$ and $p_2$ as $c(p_1)$ and $c(p_2)$, respectively.
+h\_l(k,d)=f\Bigl(\sum\_{c=1}^{C\_{in}}\sum\_{\delta=0}^{F-1} H(k+\delta, c),W\_{d,\delta,c}+b\_d\Bigr),
 
-***The Adjacency Matrix $A$ is defined as follows [[2]](#references):***
-$$
-A_{i, j} = \sum_{u \in U} \sum_{\substack{p_1, p_2 \in P_u \ p_1 \neq p_2}} c(p_1) \cdot c(p_2)
-$$
+$$$<br>
 
-Where:
-- $U$ is the set of all unique users.
-- $P_u$ is the set of pages visited by user $u$.
-- $c(p_1)$ and $c(p_2)$ are the class probabilities for pages $p_1$ and $p_2$, respectively.
-- $i = \text{nodes\_map}(p_1)$ and $j = \text{nodes\_map}(p_2)$.
-- $A_{i, j}$  is incremented by the product of the class probabilities $c(p_1) \cdot c(p_2)$.
+followed by LeakyReLU:<br>
 
-With $A$ defined, we must then remove any disconnected edges.
+$$\mathrm{LeakyReLU}(x)=\max(0,x)+\alpha\min(0,x).$$<br>
 
-Define a mask vector $\mathbf{m}$ of length $n$ such that:
+BatchNorm, MaxPool, and Dropout complete the block.<br>
 
-$$
-\mathbf{m}_i =
-\begin{cases}
-1 & \text{if } \sum_{j=1}^{n} A_{i, j} \neq 0 \
-0 & \text{if } \sum_{j=1}^{n} A_{i, j} = 0
-\end{cases}
-$$
-
-Here, $\mathbf{m}_i$ is $1$ if node $i$ has at least one connection, and $0$ if it has no connections.
-
-The reduced adjacency matrix $A{\prime}$ is obtained by selecting only the rows and columns where $\mathbf{m}[i] = 1$:
-
-$$
-A’ = A[\mathbf{m} = 1, \mathbf{m} = 1]
-$$
-
-***The Degree Matrix $D$ is defined as follows [[2]](#references):***
-
-Given a reduced adjacency matrix $A{\prime}$ (obtained from the original adjacency matrix $A$ after removing isolated nodes), the normalized diagonal degree matrix $D$ is defined as:
-
-$$
-D = \text{diag}\left(\frac{1}{\sqrt{\sum_{j=1}^{m} A’_{i,j}}}\right)
-$$
-
-***The Graph Laplacian Matrix $L$ is defined as follows [[1]](#references):***
-
-Via the normalized cuts method [[1]](#references), the Graph Laplacian can be defined as:
-
-$$
-L = D \times A \times D
-$$
-
-To make the matrix symmetrical we can simply do:
-
-$$
-L = L + L^T
-$$
-
-Computing top $k$ eigenvectors:
-
-Given the eigenvalue decomposition for $L$:
-
-$$
-Lx_i = \lambda_i x_i
-$$
-
-Where:
-
-- $L$ is symmetric.
-- $\lambda_i$ are the eigenvalues, ordered such that $ \lambda_1 \leq \lambda_2 \leq \dots \leq \lambda_n $.
-- $x_i$ are the corresponding eigenvectors.
-
-The top $k$ eigenvectors then become:
-
-$$
-X_k = [x_{(1)}, x_{(2)}, \dots, x_{(k)}]
-$$
-
+<!-- Add Figure: CNN Architecture -->
 <br>
+#### d. Deep Cross Network (DCN)<br>
 
-### Implementing the Algorithm
+After CNN, embedding \(e\in\mathbb{R}^D\) is passed through \(L\) cross layers:<br>
 
-With all the math aside, we can now create and run our algorithm!
+$$x^{(l+1)} = x^{(l)} \circ (x^{(l)}W^{(l)}) + b^{(l)} + x^{(l)}, \quad l=0,...,L-1,$$<br>
 
-<Details markdown="block">
-<summary>Click here to view the code</summary>
+where \(\circ\) is Hadamard product.<br>
 
-```python
-A = np.zeros(shape=(nodes.shape[0], nodes.shape[0]), dtype=np.float32)
-
-for u in tqdm(np.unique(interactions[:, 0])):
-    users = interactions[interactions[:, 0] == u, 1:]
-    
-    for ind, page1 in enumerate(users[:-1]):
-        i = nodes_map[page1[0]]
-        for page2 in users[ind:]:
-            j = nodes_map[page2[0]]
-            if page1[0] != page2[0]:
-                A[i, j] += page1[1].astype(np.float32) * page2[1].astype(np.float32)
-
-A = A + A.T
-
-mask = np.sum(A, axis=1) != 0
-A = A[mask][:, mask]
-
-D = np.diag(1/np.sqrt(np.sum(A, axis=1)))
-
-L = D @ A @ D  # Graph Laplacian via Normalized Cuts method [1]
-v, x = np.linalg.eigh(L)
-
-print(f"A.shape: {A.shape}")
-print(f"D.shape: {D.shape}")
-print(f"L.shape: {L.shape}")
-print(f"x.shape: {x.shape}")
-```
-</Details>
-
-Since the computation of the eigenvalue decomposition is extremely time-consuming, we can save the eigenvalue decomposition matrix with the code below.
-
-```python
-eigs = os.path.join(os.getcwd(), f'GL_Eigenvectors_Weighted')
-os.makedirs(eigs, exist_ok=True)
-np.save(os.path.join(eigs, 'eigenvectors_x.npy'), x)
-```
-
+<!-- Add Figure: DCN V2 Architecture -->
 <br>
+#### e. Multi-Layer Perceptron (MLP)<br>
 
-## K-Means Algorithm
+Final features \(x^{(L)}\) go through fully‑connected layers with ReLU, LayerNorm, and Dropout:<br>
 
-With our eigenvectors matrix computed, we can apply the k-means algorithm on this new dataset. Because of the nature of the Graph Laplacian, the data will naturally separate at weak edges, which creates local communities in the data. If you wish to skip all the math, you can click [here](#implementing-k-means-for-spectral-clustering).
+$$z^{(1)}=f(W^{(1)}x^{(L)}+b^{(1)}),\quad z^{(K)}=W^{(K)}z^{(K-1)}+b^{(K)},\quad ŷ=\mathrm{softmax}(z^{(K)}).$$<br>
 
-The k-means algorithm aims to solve [[2]](#references):
-
-Given $m$ data points $x^i \in \mathbb{R}^n, i = 1, . . . , m$, K-means clustering algorithm groups them into $k$ clusters by minimizing the function over $\{r^{ij},\mu^j\}.$
-
-$$
-J = \sum_{i=1}^m \sum_{j=1}^k r^{ij} \lVert x^i − \mu^j \lVert^2,
-$$
-
-where $r^{ij} = 1$ if $x^i$ belongs to the $j$-th cluster and $r^{ij} = 0$ otherwise.
-
-Once the minimization of the function over $\{r^{ij},\mu^j\}.$ is solved, 
-
-$$
-\mu^j = \frac{\sum_{i=1}^m r^{ij} x^i}{\sum_{i=1}^m r^{ij}}
-$$
-$$
-r^{ij} =
-\begin{cases}
-1 & if \>\> j = \underset{j=1,...,k}{\operatorname{arg min}} \lVert x^i − c^j \lVert^2 \\
-0 & if \>\> j \neq \underset{j=1,...,k}{\operatorname{arg min}} \lVert x^i − c^j \lVert^2
-\end{cases}
-$$
-
-### Implementing K-Means for Spectral Clustering
-
-Let's now implement the algorithm to find $k$ communities.
-
-<Details markdown="block">
-<summary>Click here to view the code</summary>
-
-```python
-k = 1000
-
-X = x[:, -k:]
-labels = KMeans(n_clusters=k, n_init='auto').fit(X.real).labels_  # kmeans centers
-
-labs = np.unique(labels)
-
-clusters = []
-lengths = []
-for c in tqdm(labs):
-    inds = np.where(labels == c)[0]
-    cluster = {}
-    
-    for i in inds:
-        if reverse_map[i] in cluster:
-            cluster[reverse_map[i]] += 1
-        else:
-            cluster[reverse_map[i]] = 1
-            
-    clusters.append(cluster)
-    lengths.append(len(cluster))
-    
-groups = pd.DataFrame({"Cluster": labs, "Subreddits": clusters, "Cluster Size": lengths}).sort_values(by="Cluster Size", ascending=False)
-del clusters, cluster
-
-results = pd.DataFrame({"Cluster": labels, "Subreddit": [reverse_map[i] for i in range(len(labels))]}).sort_values(by="Subreddit", ascending=False)
-
-display(groups.head(), results.head())
-```
-</Details>
-
+<!-- Add Figure: MLP for Windowed Data -->
 <br>
+### Non-Windowing Approach<br>
 
-## Results and Observations
+#### a. Direct Feature Utilization<br>
 
-To understand how the spectral clustering algorithm performed, we can visualize two of the clusters to understand their relatedness to eachother. I had to run the algorithm several times because there were way too many NSFW Subreddits showing up!
+Here, raw \(x\in\mathbb{R}^M\) at each \(t_i\) is fed directly, skipping windowing and FFT.<br>
 
-<Details markdown="block">
-<summary>Click here to view the code</summary>
+#### b. Random Forest Classifier<br>
 
-```python
-top_percent_index = int(len(groups) * 0.02)
+Baseline ML: \(T\) trees estimate class probabilities:<br>
 
-random_indices = np.random.choice(np.arange(1, top_percent_index), size=2, replace=False)
+$$P(y=c|x)=\frac{1}{T}\sum_{t=1}^T P_t(y=c|x).$$<br>
 
-for i in random_indices:
-    subreddit_dict = groups.iloc[i]['Subreddits']
-    cluster_nodes = list(subreddit_dict.keys())
-    
-    indices = [nodes_map[node] for node in cluster_nodes if node in nodes_map]
-    subgraph = nx.from_numpy_array(A[np.ix_(indices, indices)])
-    subgraph = nx.relabel_nodes(subgraph, {i: reverse_map[i] for i in indices})
-    edge_weights = np.array([A[u, v] for u, v in subgraph.edges()])
-    edge_weights = (edge_weights - edge_weights.min()) / (edge_weights.max() - edge_weights.min()) * 5
-    
-    wordcloud = WordCloud(width=800, height=400, background_color='black', colormap='OrRd').generate_from_frequencies(subreddit_dict)
-    
-    plt.figure(figsize=(10, 5))
-    plt.imshow(wordcloud, interpolation='bilinear')
-    plt.axis('off')
-    plt.title(f"Cluster {groups.iloc[i]['Cluster']} (Size: {groups.iloc[i]['Cluster Size']})")
-    plt.show()
-    
-    plt.figure(figsize=(12, 8))
-    pos = nx.spring_layout(subgraph, seed=42)  # Positions for all nodes
-    nx.draw(subgraph, pos, with_labels=False, node_color='red', edge_color='gray', width=np.log10(edge_weights+0.8), node_size=50, font_size=10)
-    plt.title(f"Subcommunity Network for Cluster {groups.iloc[i]['Cluster']}")
-    plt.show()
-    
-    print('\n\n')
-```
-</Details>
+We use 25 trees, each on random feature subsets.<br>
 
-![download-0](https://github.com/user-attachments/assets/ccfefc8a-4701-43cb-941f-891d1f74d8af)
-
-![download-1](https://github.com/user-attachments/assets/f0578010-5275-49d4-82c2-e655883afd2b)
-
+<!-- Add Figure: Random Forest Architecture -->
 <br>
+#### c. Outer Product Neural Network (OPNN)<br>
 
-![download-2](https://github.com/user-attachments/assets/de624763-b4c3-4dac-a328-061806b645a1)
+Compute outer product \(O=x x^T\in\mathbb{R}^{M\times M},\;O_{ij}=x_i x_j\), flatten to \(z\in\mathbb{R}^{M^2}\), then MLP:<br>
 
-![download-3](https://github.com/user-attachments/assets/a8926feb-8217-4c74-8c9a-2d6b0e248be3)
+$$ŷ=\mathrm{softmax}(W_2\,f(W_1z+b_1)+b_2).$$<br>
 
-While the Spectral Clustering approach has revealed clear community trends among subreddits, the presence of outlier subreddits suggests that there may be room for optimization, particularly in choosing the number of clusters ($k$). This could be due to either the complexity of user behavior or a suboptimal value of $k$. Additionally, the choice of using commenting activity as a measure of subreddit engagement, while useful, might not be the best indicator of true user interest. Future projects could explore other data features, like subreddit joins or upvotes, which might provide a more accurate representation of user behavior.
+This captures second‑order interactions explicitly.<br>
 
-The computational expense of Spectral Clustering also raises the question of whether simpler algorithms could achieve similar results. While Spectral Clustering excels at capturing complex relationships, it might be worth exploring more straightforward models that could offer efficiency gains, especially for large-scale applications. Despite these considerations, the model’s ability to uncover nuanced community structures without relying on complex neural networks is a significant advantage, making it a promising tool for building unsupervised recommendation systems in the future.
-
+<!-- Add Figure: OPNN Architecture -->
 <br>
+### Loss & Optimization<br>
 
-## References
+For both deep models, Cross‑Entropy Loss is:<br>
 
-[1] Jianbo Shi and J. Malik, "Normalized cuts and image segmentation," in IEEE Transactions on Pattern Analysis and Machine Intelligence, vol. 22, no. 8, pp. 888-905, Aug. 2000, doi: 10.1109/34.868688.
+$$\mathcal{L}(\theta)=-\sum_{c}y_c \log ŷ_c,$$<br>
 
-[2] Xie, Yao, "Spectral Clustering." Class lecture, Computational Data Analytics, Georgia Institute of Technology, Atlanta, GA. August 21, 2024.
+optimized via Adam.<br>
+<br>
+## Evaluation Technique<br>
+
+We compare accuracy and inference time per sample on an M3 Pro with MPS GPU. Accuracy is:<br>
+
+$$\mathrm{Accuracy}=\frac{TP+TN}{TP+TN+FP+FN}.$$<br>
+<br>
+## Results<br>
+
+| Approach                          | Accuracy (%) | Inference Time (ms/sample) | Parameters          |
+|-----------------------------------|--------------|----------------------------|---------------------|
+| Windowing (CNN+DCN+MLP)           | 97.86        | 0.0828                     | 46.8 M              |
+| Non-Windowing (RF)                | 98.01        | 0.0313                     | —                   |
+| Non-Windowing (OPNN+MLP)          | 98.43        | 0.0081                     | 11.0 M              |<br>
+<br>
+<!-- Add Figure: Results Comparison Chart -->
+
+## Conclusion & Future Work<br>
+
+Non-windowed deep learning yields both higher accuracy and lower latency, suggesting that time‑frequency segmentation may be unnecessary for static gestures. Future work should explore dynamic gesture sequences and transferability across users.<br>
+<br>
+## References<br>
+
+1. Olmo & Domingo (2020). EMG Characterization. Materials, 13(24), 5815.<br>
+2. Raez et al. (2006). EMG Signal Analysis. Biol. Proc. Online, 8, 11–35.<br>
+3. Rani et al. (2023). sEMG & AI. IEEE Access, 11, 105140–105169.<br>
+4. Asogbon et al. (2018). Window Conditioning in EMG. IEEE CBS.<br>
+5. Krilova et al. (2018). EMG Data for Gestures. UCI Repository.<br>
+
+$$$
