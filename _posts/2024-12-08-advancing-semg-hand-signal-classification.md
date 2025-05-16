@@ -190,7 +190,11 @@ P(y=c\mid x)
 = \frac{1}{T} \sum_{t=1}^T P_t(y=c\mid x).
 $$
 
+<p align="center">
+<img width="547" alt="Screenshot 2025-05-16 at 4 57 40 PM" src="https://github.com/user-attachments/assets/11648ccb-d749-4f56-a89f-0a7acbd934ad" />
 
+Image Source: [https://www.researchgate.net/figure/Architecture-of-the-Random-Forest-algorithm_fig1_337407116](https://www.researchgate.net/figure/Architecture-of-the-Random-Forest-algorithm_fig1_337407116)
+</p>
 
 #### c. Outer-Product Neural Network (OPNN)
 
