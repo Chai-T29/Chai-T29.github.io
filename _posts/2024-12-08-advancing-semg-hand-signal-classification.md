@@ -79,7 +79,7 @@ for $j=1,\dots,N$, where $N$ is the number of windows.
 
 <img width="514" alt="Screenshot 2025-05-16 at 4 31 22 PM" src="https://github.com/user-attachments/assets/517465cc-4b10-4881-ab96-a90ca5d20548" />
 
-Image Source: [https://www.danorlandoblog.com/use-the-sliding-window-pattern-to-solve-problems-in-javascript/](Source: https://www.danorlandoblog.com/use-the-sliding-window-pattern-to-solve-problems-in-javascript/)
+Image Source: [https://www.danorlandoblog.com/use-the-sliding-window-pattern-to-solve-problems-in-javascript/](https://www.danorlandoblog.com/use-the-sliding-window-pattern-to-solve-problems-in-javascript/)
 
 #### b. Frequency-Domain Transformation (FFT)
 
@@ -124,7 +124,8 @@ f(x)=\max(0,x)+\alpha\,\min(0,x).
 $$
 
 Each block also includes BatchNorm, MaxPool and Dropout.  
-<!-- Add Figure 3: CNN Architecture -->
+
+<img width="882" alt="Screenshot 2025-05-16 at 4 36 04 PM" src="https://github.com/user-attachments/assets/5d6890db-423e-4b1e-ae4a-c5756f33980c" />
 
 #### d. Deep Cross Network (DCN)
 
