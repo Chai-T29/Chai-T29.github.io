@@ -219,7 +219,12 @@ $$
 $$
 
 optimized with Adam.  
-<!-- Add Figure 8: Adam Optimizer Pseudocode -->
+
+<p align="center">
+<img width="500" alt="Screenshot 2025-05-16 at 5 00 57 PM" src="https://github.com/user-attachments/assets/bdf38ee0-0dc6-4df1-ac99-70f809632346" />
+
+Image Source: [https://pytorch.org/docs/stable/generated/torch.optim.Adam.html](https://pytorch.org/docs/stable/generated/torch.optim.Adam.html)
+</p>
 
 ## Evaluation Technique
 
