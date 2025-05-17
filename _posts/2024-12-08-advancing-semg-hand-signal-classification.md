@@ -205,7 +205,9 @@ $$
 = \mathrm{softmax}\bigl(W_2\,f(W_1\,z + b_1) + b_2\bigr).
 $$
 
-<!-- Add Figure 7: OPNN Architecture -->
+<p align="center">
+<img width="607" alt="Screenshot 2025-05-16 at 4 59 45 PM" src="https://github.com/user-attachments/assets/df49d287-44a0-4e88-be2a-8844862f1e1e" />
+</p>
 
 ### 4. Loss & Optimization
 
