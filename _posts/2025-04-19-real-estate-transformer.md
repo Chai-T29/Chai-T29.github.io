@@ -85,7 +85,9 @@ $$
 
    We follow “Attention Is All You Need” with two modifications: we project encoder outputs down before feeding the decoder, and we initialize the decoder with the last observed ZA-normalized values.  
 
+<div style="text-align: center;">
 <img width="591" alt="Screenshot 2025-06-08 at 12 51 07 PM" src="https://github.com/user-attachments/assets/5829c5a1-f86a-47cc-b0db-616b60ea51eb" />
+</div>
 
 <br>
 
