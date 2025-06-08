@@ -72,10 +72,12 @@ $$
 
 2. **MLP Projection Layers:** Transform normalized housing tensors:
 
+<div style="overflow-x: auto;">
 $$
  X'_{\mathrm{housing}}
  = \mathrm{ReLU}\bigl(W_2\,\mathrm{ReLU}(W_1\,X_{\mathrm{housing}}+b_1)+b_2\bigr)
 $$
+</div>
 
 3. **Transformer Encoder–Decoder:**  
    - Encoder input $X_{\mathrm{enc}}\in\mathbb{R}^{B\times T\times d_{\mathrm{embed}}}$  
@@ -162,15 +164,19 @@ These tools translate complex model outputs into intuitive visuals, enabling non
 
 We trained with Huber loss and monitored four metrics defined as:
 
+<div style="overflow-x: auto;">
 $$
 \mathrm{RMSE} = \frac{1}{n}\sum_{i=1}^n(y_i - \hat y_i)^2,\quad
 \mathrm{MAE} = \frac{1}{n}\sum_{i=1}^n|y_i - \hat y_i|,
 $$
+</div>
 
+<div style="overflow-x: auto;">
 $$
 R^2 = 1 - \frac{\sum_i(y_i - \hat y_i)^2}{\sum_i(y_i - \bar y)^2},\quad
 \mathrm{MAPE} = \frac{100}{n}\sum_{i=1}^n\left|\frac{y_i - \hat y_i}{y_i}\right|
 $$
+</div>
 
 Under our final hyperparameters (36-month window, embedding = 32, feed-forward = 128, dropout = 0.3), we achieved:
 
