@@ -80,39 +80,44 @@ for $j=1,\dots,N$, where $N$ is the number of windows.
 <p align="center">
 <img width="514" alt="Screenshot 2025-05-16 at 4 31 22 PM" src="https://github.com/user-attachments/assets/517465cc-4b10-4881-ab96-a90ca5d20548" />
 
-Image Source: [https://www.danorlandoblog.com/use-the-sliding-window-pattern-to-solve-problems-in-javascript/](https://www.danorlandoblog.com/use-the-sliding-window-pattern-to-solve-problems-in-javascript/)
+[Image Source](https://www.danorlandoblog.com/use-the-sliding-window-pattern-to-solve-problems-in-javascript/)
 </p>
 
 #### b. Frequency-Domain Transformation (FFT)
 
 For each channel $m=1,\dots,M$, perform a Discrete Fourier Transform on each windowed signal $x_m^{(j)}(n)$:
 
+<div style="overflow-x: auto;">
 $$
 X_m^{(j)}(k) = \sum_{n=0}^{W-1} x_m(n)\,e^{-2\pi i\,k\,n / W},
 \quad
 k=0,\dots,\lfloor W/2\rfloor.
 $$
+</div>
 
 Record magnitude and phase:
 
+<div style="overflow-x: auto;">
 $$
 |X_m^{(j)}(k)| = \sqrt{\Re(X_m^{(j)}(k))^2 + \Im(X_m^{(j)}(k))^2},
 \quad
 \angle X_m^{(j)}(k) = \arctan\!\frac{\Im(X_m^{(j)}(k))}{\Re(X_m^{(j)}(k))}.
 $$
+</div>
 
 Stacking across $M$ channels yields a feature vector $H^{(j)}\in\mathbb{R}^{2M(K+1)}$, where $K=\lfloor W/2\rfloor$.  
 
 <p align="center">
 <img width="521" alt="Screenshot 2025-05-16 at 4 33 46 PM" src="https://github.com/user-attachments/assets/698a6fdd-e9b2-4e59-b8da-8dbb437727c3" />
 
-Image Source: [https://www.researchgate.net/figure/Three-Components-of-a-Complex-Number-In-Phase-Quadrature-and-Phase-Incoming-radar-wave_fig2_332511933](https://www.researchgate.net/figure/Three-Components-of-a-Complex-Number-In-Phase-Quadrature-and-Phase-Incoming-radar-wave_fig2_332511933)
+[Image Source](https://www.researchgate.net/figure/Three-Components-of-a-Complex-Number-In-Phase-Quadrature-and-Phase-Incoming-radar-wave_fig2_332511933)
 </p>
 
 #### c. CNN for Frequency-Domain Feature Extraction
 
 Treating frequency bins as a “spatial” axis and channels as input planes, a 1D convolution with filters $W^{(\ell)}\in\mathbb{R}^{F\times C_{\mathrm{in}}\times C_{\mathrm{out}}}$ and bias $b^{(\ell)}$ computes
 
+<div style="overflow-x: auto;">
 $$
 h^{(\ell)}(k,d) = f\Bigl(
   \sum_{c=1}^{C_{\mathrm{in}}}
@@ -121,6 +126,7 @@ h^{(\ell)}(k,d) = f\Bigl(
   + b^{(\ell)}_d
 \Bigr),
 $$
+</div>
 
 where $f$ is LeakyReLU:  
 $$
@@ -137,24 +143,27 @@ Each block also includes BatchNorm, MaxPool and Dropout.
 
 Given embedding $x^{(0)}$, each cross layer $\ell$ updates
 
+<div style="overflow-x: auto;">
 $$
 x^{(\ell+1)} = x^{(\ell)} \,\circ\,(x^{(\ell)}\,W^{(\ell)}) \;+\; b^{(\ell)} \;+\; x^{(\ell)},
 \quad
 \ell=0,\dots,L-1,
 $$
+</div>
 
 where $\circ$ is the Hadamard (elementwise) product.  
 
 <p align="center">
 <img width="772" alt="Screenshot 2025-05-16 at 4 36 41 PM" src="https://github.com/user-attachments/assets/1943994a-949f-4b66-b1f8-7a3559e93385" />
 
-Image Source: [https://arxiv.org/pdf/2008.13535](https://arxiv.org/pdf/2008.13535)
+[Image Source](https://arxiv.org/pdf/2008.13535)
 </p>
 
 #### e. Multi-Layer Perceptron (MLP)
 
 The final DCN output $x^{(L)}$ is passed through fully connected layers:
 
+<div style="overflow-x: auto;">
 $$
 z^{(1)} = f\bigl(W^{(1)}\,x^{(L)} + b^{(1)}\bigr),
 \quad
@@ -162,6 +171,7 @@ z^{(K)} = W^{(K)}\,z^{(K-1)} + b^{(K)},
 \quad
 \hat y = \mathrm{softmax}\bigl(z^{(K)}\bigr).
 $$
+</div>
 
 <p align="center">
 <img width="724" alt="Screenshot 2025-05-16 at 4 52 00 PM" src="https://github.com/user-attachments/assets/a251a73f-f3c6-47f3-be8c-29a8a9836a95" />
@@ -193,7 +203,7 @@ $$
 <p align="center">
 <img width="547" alt="Screenshot 2025-05-16 at 4 57 40 PM" src="https://github.com/user-attachments/assets/11648ccb-d749-4f56-a89f-0a7acbd934ad" />
 
-Image Source: [https://www.researchgate.net/figure/Architecture-of-the-Random-Forest-algorithm_fig1_337407116](https://www.researchgate.net/figure/Architecture-of-the-Random-Forest-algorithm_fig1_337407116)
+[Image Source](https://www.researchgate.net/figure/Architecture-of-the-Random-Forest-algorithm_fig1_337407116)
 </p>
 
 #### c. Outer-Product Neural Network (OPNN)
@@ -223,7 +233,7 @@ optimized with Adam.
 <p align="center">
 <img width="500" alt="Screenshot 2025-05-16 at 5 00 57 PM" src="https://github.com/user-attachments/assets/bdf38ee0-0dc6-4df1-ac99-70f809632346" />
 
-Image Source: [https://pytorch.org/docs/stable/generated/torch.optim.Adam.html](https://pytorch.org/docs/stable/generated/torch.optim.Adam.html)
+[Image Source](https://pytorch.org/docs/stable/generated/torch.optim.Adam.html)
 </p>
 
 ## Evaluation Technique
@@ -236,13 +246,13 @@ $$
 
 ## Results
 
+<div style="overflow-x: auto; white-space: nowrap;">
 | Approach                     | Accuracy (%) | Inference Time (ms/sample) | Parameters |
 |------------------------------|--------------|----------------------------|------------|
 | Windowing (CNN+DCN+MLP)      | 97.86        | 0.0828                     | 46.8 M     |
 | Non-Windowing (RandomForest) | 98.01        | 0.0313                     | —          |
 | Non-Windowing (OPNN+MLP)     | 98.43        | 0.0081                     | 11.0 M     |
-
-<!-- Add Figure 9: Results Comparison Chart -->
+</div>
 
 ## Conclusion & Future Work
 
