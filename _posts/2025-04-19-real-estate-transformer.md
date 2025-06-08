@@ -40,19 +40,23 @@ We draw upon two primary datasets:
    
 For housing data $X_{\mathrm{housing}}\in\mathbb{R}^{B\times T\times F\times P}$, define an indicator $1_{x\neq0}$. For each feature $f$:
 
+<div style="overflow-x: auto;">
 $$
 \mu_f = \frac{1}{N_f + \epsilon}\sum_{b=1}^B\sum_{t=1}^T\sum_{p=1}^P 1_{x_{b,t,f,p}\neq0}\,x_{b,t,f,p},\qquad
 N_f = \sum_{b,t,p}1_{x_{b,t,f,p}\neq0}+\epsilon
 $$
+</div>
 
 $$
 \sigma_f = \sqrt{\frac{1}{N_f + \epsilon}\sum_{b,t,p}1_{x_{b,t,f,p}\neq0}\,x_{b,t,f,p}^2 - \mu_f^2}
 $$
 
+<div style="overflow-x: auto;">
 $$
 \mathrm{ZA\_Norm}(x_{f}) = \frac{1_{x_f\neq0}\,x_f - \mu_f}{\sigma_f + \epsilon},\quad
 x = \mathrm{ZA\_Norm}(x_{\mathrm{norm}})\,(\sigma_f + \epsilon) + \mu_f
 $$
+</div>
 
 <br>
 
