@@ -89,11 +89,7 @@ We deployed two complementary interfaces:
 
 - **Flask Dashboard:** Interactive map and ZIP selector for side-by-side forecast charts, allowing users to input mortgage rate and down payment. This application can be run locally by following the steps in our [Colab Notebook](https://colab.research.google.com/drive/1eK-8Jtmvc8v7x1bd74if_X0ct84L21BG?usp=drive_link).
 
-<img width="388" alt="Screenshot 2025-06-08 at 1 07 05 PM" src="https://github.com/user-attachments/assets/576ca907-0973-4b2c-899f-2baf69259eba" />
-
 - **Tableau Dashboard:** Choropleth map illustrating rent vs. buy cost-effectiveness, with adjustable parameters to explore regional patterns. You can view the full Tableau visualization [here](https://public.tableau.com/shared/GZY7ZH5DJ?:display_count=n&:origin=viz_share_link)
-
-<img width="214" alt="Screenshot 2025-06-08 at 12 55 47 PM" src="https://github.com/user-attachments/assets/656c367e-cb74-4423-b49b-ae8862972b95" />
 
 {% raw %}
 <style>
