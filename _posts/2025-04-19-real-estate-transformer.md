@@ -96,43 +96,61 @@ We deployed two complementary interfaces:
 <img width="214" alt="Screenshot 2025-06-08 at 12 55 47 PM" src="https://github.com/user-attachments/assets/656c367e-cb74-4423-b49b-ae8862972b95" />
 
 {% raw %}
-<div class="tableauPlaceholder" id="viz1749402530869" style="position: relative">
+<style>
+  /* ensure container never overflows */
+  .tableauPlaceholder {
+    max-width: 100% !important;
+  }
+  .tableauPlaceholder object {
+    width: 100% !important;
+    display: block;
+  }
+</style>
+
+<div class="tableauPlaceholder" id="viz1749402530869" style="position: relative; width: 100%;">
   <noscript>
     <a href="#">
-      <img alt="Dashboard 1" src="https://public.tableau.com/static/images/GZ/GZY7ZH5DJ/1_rss.png" style="border: none" />
+      <img alt="Dashboard 1"
+           src="https://public.tableau.com/static/images/GZ/GZY7ZH5DJ/1_rss.png"
+           style="border: none; width: 100%;" />
     </a>
   </noscript>
   <object class="tableauViz" style="display:none;">
-    <param name="host_url" value="https%3A%2F%2Fpublic.tableau.com%2F" />
+    <param name="host_url"        value="https%3A%2F%2Fpublic.tableau.com%2F" />
     <param name="embed_code_version" value="3" />
-    <param name="path" value="shared/GZY7ZH5DJ" />
-    <param name="toolbar" value="yes" />
-    <param name="static_image" value="https://public.tableau.com/static/images/GZ/GZY7ZH5DJ/1.png" />
-    <param name="animate_transition" value="yes" />
-    <param name="display_static_image" value="yes" />
-    <param name="display_spinner" value="yes" />
-    <param name="display_overlay" value="yes" />
-    <param name="display_count" value="yes" />
-    <param name="language" value="en-US" />
-    <param name="filter" value="publish=yes" />
+    <param name="path"            value="shared/GZY7ZH5DJ" />
+    <param name="toolbar"         value="yes" />
+    <param name="static_image"    value="https://public.tableau.com/static/images/GZ/GZY7ZH5DJ/1.png" />
+    <param name="animate_transition"    value="yes" />
+    <param name="display_static_image"  value="yes" />
+    <param name="display_spinner"       value="yes" />
+    <param name="display_overlay"       value="yes" />
+    <param name="display_count"         value="yes" />
+    <param name="language"              value="en-US" />
+    <param name="filter"                value="publish=yes" />
   </object>
 </div>
+
 <script type="text/javascript">
-  var divElement = document.getElementById("viz1749402530869");
-  var vizElement = divElement.getElementsByTagName("object")[0];
-  if (divElement.offsetWidth > 800) {
-    vizElement.style.width = "1000px";
-    vizElement.style.height = "827px";
-  } else if (divElement.offsetWidth > 500) {
-    vizElement.style.width = "1000px";
-    vizElement.style.height = "827px";
-  } else {
-    vizElement.style.width = "100%";
-    vizElement.style.height = "1127px";
-  }
-  var scriptElement = document.createElement("script");
-  scriptElement.src = "https://public.tableau.com/javascripts/api/viz_v1.js";
-  vizElement.parentNode.insertBefore(scriptElement, vizElement);
+  (function() {
+    var divElement = document.getElementById('viz1749402530869');
+    var vizElement = divElement.getElementsByTagName('object')[0];
+    var aspectRatio = 827 / 1000; // original height ÷ original width
+
+    function resizeViz() {
+      var w = divElement.offsetWidth;
+      vizElement.style.width  = w + 'px';
+      vizElement.style.height = Math.round(w * aspectRatio) + 'px';
+    }
+    // initial resize
+    resizeViz();
+    // resize on window changes
+    window.addEventListener('resize', resizeViz);
+
+    var scriptElement = document.createElement('script');
+    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+    vizElement.parentNode.insertBefore(scriptElement, vizElement);
+  })();
 </script>
 {% endraw %}
 
