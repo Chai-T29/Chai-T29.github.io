@@ -12,7 +12,7 @@ lang: en-US
 title: "Chaitanya's Projects"
 
 # A description of your site for meta tag, search engine results.
-description: "Chaitanya Tatipigari is an aspiring Data Scientist with a passion for analyzing high-dimensional data. Below are some projects from his portfolio that might spark your interest."
+description: "A collection of AI/ML systems and experiments built by Chaitanya Tatipigari."
 
 # The subpath of your site, e.g. /blog, for generating urls.
 baseurl: ""
