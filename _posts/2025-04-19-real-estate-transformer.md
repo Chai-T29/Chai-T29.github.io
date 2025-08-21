@@ -6,7 +6,7 @@ date: 2025-04-19
 feature_image: images/rent_vs_buy.jpg
 ---
 
-This project presents a deep learning framework for forecasting monthly home prices and rental costs at the ZIP-code level across the United States. We integrate Redfin property sales data with American Community Survey rental figures to produce localized, forward-looking insights on the rent-versus-buy decision. If you’d like to explore the full code and dataset, you can find everything [here]([<YOUR_GOOGLE_DRIVE_LINK>](https://drive.google.com/drive/folders/1wBVWORZl7w8UccK1tqoNAn0_LC3hptcO?usp=sharing)).
+This project presents a deep learning framework for forecasting monthly home prices and rental costs at the ZIP-code level across the United States. We integrate Redfin property sales data with American Community Survey rental figures to produce localized, forward-looking insights on the rent-versus-buy decision. If you’d like to explore the full code and dataset, you can find everything [here](https://drive.google.com/drive/folders/1wBVWORZl7w8UccK1tqoNAn0_LC3hptcO?usp=sharing).
 
 <!--more-->
 
